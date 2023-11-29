@@ -8,7 +8,7 @@ import ActionCommand from "./ActionCommand";
 import ActionBrowser from "./ActionBrowser";
 import { DataTable } from "./DataTable";
 import { useStreamerBotContext } from "./streamerbot-context";
-import { useColumns } from "./hooks";
+import { useColumns } from "../lib/hooks";
 
 type Props = {};
 

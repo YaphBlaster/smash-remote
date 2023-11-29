@@ -1,28 +1,14 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  Dna,
-  Edit,
-  MoreHorizontal,
-  PlayCircle,
-} from "lucide-react";
+import { ArrowUpDown, Edit, PlayCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { StreamerbotAction } from "@streamerbot/client";
-import { useStreamerBotContext } from "./streamerbot-context";
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
+import { useStreamerBotContext } from "../components/streamerbot-context";
+import FormDialog from "@/components/FormDialog";
+import FormSheet from "@/components/FormSheet";
 
 const initialState: InitialState = {
   bonesaw: "",
@@ -98,8 +84,10 @@ export const useColumns = () => {
             <Button variant="ghost" onClick={doAction} size="icon">
               <PlayCircle className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" onClick={doAction} size="icon">
-              <Edit className="h-4 w-4" />
+            <Button variant="ghost" size="icon">
+              <FormSheet actionId={action.id}>
+                <Edit className="h-4 w-4" />
+              </FormSheet>
             </Button>
           </>
         );
