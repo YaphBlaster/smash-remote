@@ -9,6 +9,7 @@ import ActionBrowser from "./ActionBrowser";
 import { DataTable } from "./DataTable";
 import { useStreamerBotContext } from "./streamerbot-context";
 import { useColumns } from "../lib/hooks";
+import GiphySearch from "./GiphySearch";
 
 type Props = {};
 
@@ -56,6 +57,7 @@ const ObsContainer = (props: Props) => {
   ) : (
     <div>
       <ActionBrowser>
+        <GiphySearch />
         {data?.actionsRaw && (
           <DataTable columns={columns} data={data.actionsRaw} />
         )}
