@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { StreamerbotAction } from "@streamerbot/client";
 import { useStreamerBotContext } from "../components/streamerbot-context";
 import FormDialog from "@/components/FormDialog";
-import FormSheet from "@/components/FormSheet";
+import FormSheet, { actionIdToSchema } from "@/components/FormSheet";
 
 const initialState: InitialState = {
   bonesaw: "",
@@ -79,12 +79,17 @@ export const useColumns = () => {
           });
         };
 
+        const test = actionIdToSchema[action.id];
+        console.log("🚀 ~ file: hooks.tsx:83 ~ useColumns ~ test:", test);
+
+        const hasEditableFields = actionIdToSchema[action.id];
+
         return (
           <>
             <Button variant="ghost" onClick={doAction} size="icon">
               <PlayCircle className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" disabled={!hasEditableFields}>
               <FormSheet actionId={action.id}>
                 <Edit className="h-4 w-4" />
               </FormSheet>

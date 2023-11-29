@@ -26,7 +26,7 @@ const ActionCommand = ({ actions = {} }: Props) => {
       <Button onClick={() => setOpen(!open)}>Toggle</Button>
       <Command value={value} onValueChange={setValue}>
         <CommandInput placeholder="Type a command or search..." />
-        <CommandList onSelect={() => console.log("hello")}>
+        <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           {Object.entries(actions).map(([groupKey, actionData]) => (
             <span key={groupKey}>
