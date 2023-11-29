@@ -1,24 +1,24 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import OBSWebSocket from "obs-websocket-js";
 import { Button } from "./ui/button";
 import { StreamerbotAction, StreamerbotClient } from "@streamerbot/client";
 import { useQuery } from "@tanstack/react-query";
 import ActionCommand from "./ActionCommand";
-
-type _SceneItem = {
-  sceneItemId: number;
-  sceneItemIndex: string;
-  sourceName: string;
-};
+import ActionBrowser from "./ActionBrowser";
+import { DataTable } from "./DataTable";
+import { useStreamerBotContext } from "./streamerbot-context";
+import { useColumns } from "./hooks";
 
 type Props = {};
 
 const ObsContainer = (props: Props) => {
-  const { current: client } = useRef(new StreamerbotClient());
+  const { streamerbotClient: client } = useStreamerBotContext();
+  const columns = useColumns();
 
   const fetchActions = async () => {
     const { actions } = await client.getActions();
+
     const commandMap: Record<string, StreamerbotAction[]> = {};
     actions.forEach((action) => {
       if (commandMap[action.group]) {
@@ -55,15 +55,11 @@ const ObsContainer = (props: Props) => {
     <div>Loading</div>
   ) : (
     <div>
-      <ActionCommand actions={data?.commandMap} />
-      {data?.actionsRaw?.map((action) => {
-        const { id, name } = action;
-        return (
-          <Button key={id} onClick={() => playAction(id)}>
-            {name}
-          </Button>
-        );
-      })}
+      <ActionBrowser>
+        {data?.actionsRaw && (
+          <DataTable columns={columns} data={data.actionsRaw} />
+        )}
+      </ActionBrowser>
     </div>
   );
 };
