@@ -19,6 +19,12 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 import { Badge } from "./ui/badge";
+import TickerForm from "./TickerForm";
+
+export type _FetchActionsType = {
+  actionsRaw: StreamerbotAction[];
+  commandMap: Record<string, StreamerbotAction[]>;
+};
 
 type Props = {};
 
@@ -51,6 +57,7 @@ const ObsContainer = (props: Props) => {
   ) : (
     <div>
       <ActionBrowser>
+        <TickerForm />
         <GiphySearch />
         {data?.actionsRaw && (
           <DataTable columns={columns} data={data.actionsRaw} />

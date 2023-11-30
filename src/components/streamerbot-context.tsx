@@ -26,12 +26,18 @@ export const useStreamerBotContext = () => {
   return streamerbotContext;
 };
 const StreamerbotProvider = ({ children }: PropsWithChildren) => {
-  const [isObsConnected, setIsObsConnected] = useState(true);
+  const [isObsConnected, setIsObsConnected] = useState(false);
 
-  const { current: client } = useRef(new StreamerbotClient({}));
+  const { current: client } = useRef(
+    new StreamerbotClient({
+      subscribe: {
+        Obs: ["Connected", "Disconnected"],
+      },
+    })
+  );
 
   useEffect(() => {
-    client.on("Obs.Connected", (data) => setIsObsConnected(true));
+    client.on("Obs.Connected", () => setIsObsConnected(true));
     client.on("Obs.Disconnected", () => setIsObsConnected(false));
   }, [client]);
 

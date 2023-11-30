@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Edit, PlayCircle } from "lucide-react";
+import { ArrowUpDown, Edit, Play, PlayCircle, PlaySquare } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -84,7 +84,7 @@ export const useColumns = () => {
         return (
           <>
             <Button variant="ghost" onClick={doAction} size="icon">
-              <PlayCircle className="h-4 w-4" />
+              <Play className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="icon" disabled={!hasEditableFields}>
               <FormSheet actionId={action.id}>

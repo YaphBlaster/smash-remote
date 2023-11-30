@@ -28,7 +28,7 @@ const ActionBrowser = ({ children }: PropsWithChildren) => {
         <CardTitle className="flex justify-between ">
           <div>Smash Mouth</div>
 
-          <TooltipProvider>
+          {/* <TooltipProvider>
             <Tooltip delayDuration={0}>
               <TooltipTrigger>
                 {isObsConnected ? (
@@ -47,7 +47,7 @@ const ActionBrowser = ({ children }: PropsWithChildren) => {
                 {isObsConnected ? "OBS Connected" : "OBS Disconnected"}
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
+          </TooltipProvider> */}
         </CardTitle>
         <CardDescription className="flex">
           Talk shit and tell us how you really feel
