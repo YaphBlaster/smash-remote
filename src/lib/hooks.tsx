@@ -79,9 +79,6 @@ export const useColumns = () => {
           });
         };
 
-        const test = actionIdToSchema[action.id];
-        console.log("🚀 ~ file: hooks.tsx:83 ~ useColumns ~ test:", test);
-
         const hasEditableFields = actionIdToSchema[action.id];
 
         return (

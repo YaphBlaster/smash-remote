@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import OBSWebSocket from "obs-websocket-js";
 import { Button } from "./ui/button";
 import { StreamerbotAction, StreamerbotClient } from "@streamerbot/client";
@@ -11,10 +11,20 @@ import { useStreamerBotContext } from "./streamerbot-context";
 import { useColumns } from "../lib/hooks";
 import GiphySearch from "./GiphySearch";
 
+import { VideoIcon, VideoOffIcon } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
+import { Badge } from "./ui/badge";
+
 type Props = {};
 
 const ObsContainer = (props: Props) => {
   const { streamerbotClient: client } = useStreamerBotContext();
+
   const columns = useColumns();
 
   const fetchActions = async () => {
@@ -31,26 +41,10 @@ const ObsContainer = (props: Props) => {
     return { actionsRaw: actions, commandMap };
   };
 
-  const subscribe = async () => {
-    return await client.subscribe("*");
-  };
-
   const { data, isFetching } = useQuery({
     queryKey: ["actions"],
     queryFn: fetchActions,
   });
-
-  const response = useQuery({
-    queryKey: ["subscribe"],
-    queryFn: subscribe,
-  });
-
-  const playAction = async (actionId: string) => {
-    await client.doAction(actionId, {
-      bonesaw: "Yaphet",
-      humanSpider: "Travis",
-    });
-  };
 
   return isFetching ? (
     <div>Loading</div>
