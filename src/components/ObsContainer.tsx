@@ -10,6 +10,8 @@ import GiphySearch from "./GiphySearch";
 
 import TickerForm from "./TickerForm";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
+import Image from "next/image";
+import Loading from "./Loading";
 
 export type _FetchActionsType = {
   actionsRaw: StreamerbotAction[];
@@ -43,7 +45,7 @@ const ObsContainer = (props: Props) => {
   });
 
   return isFetching ? (
-    <div>Loading</div>
+    <Loading />
   ) : (
     <ActionBrowser>
       <div className="flex flex-col gap-y-6">
