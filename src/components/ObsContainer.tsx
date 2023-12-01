@@ -57,8 +57,10 @@ const ObsContainer = (props: Props) => {
   ) : (
     <div>
       <ActionBrowser>
-        <TickerForm />
-        <GiphySearch />
+        <div className="flex flex-col gap-y-6">
+          <TickerForm />
+          <GiphySearch />
+        </div>
         {data?.actionsRaw && (
           <DataTable columns={columns} data={data.actionsRaw} />
         )}

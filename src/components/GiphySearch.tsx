@@ -9,6 +9,8 @@ import {
 import { ScrollArea } from "./ui/scroll-area";
 import { useStreamerBotContext } from "./streamerbot-context";
 import { Card } from "./ui/card";
+import { Input } from "./ui/input";
+import { GiphyFetch } from "@giphy/js-fetch-api";
 
 // the search experience consists of the manager and its child components that use SearchContext
 const SearchExperience = ({ children }: PropsWithChildren) => (
@@ -25,10 +27,11 @@ type Props = {};
 const GiphySearch = (props: Props) => {
   const { streamerbotClient } = useStreamerBotContext();
   const { fetchGifs, searchKey } = useContext(SearchContext);
+  const gf = new GiphyFetch(process.env.NEXT_PUBLIC_GIPHY_KEY!);
 
   return (
     <div>
-      <SearchBar />
+      <SearchBar className="shadow shadow-sm transition-colors border-input border rounded-md" />
 
       {searchKey && (
         <div className="absolute z-[1]">
@@ -37,6 +40,17 @@ const GiphySearch = (props: Props) => {
               hideAttribution
               noLink
               onGifClick={async (gif, e) => {
+                console.log(
+                  "🚀 ~ file: GiphySearch.tsx:43 ~ onGifClick={ ~ gif:",
+                  gif
+                );
+                const { frames }: any = gif.images.original;
+
+                const response = await gf.gif(gif.id as string);
+                console.log(
+                  "🚀 ~ file: GiphySearch.tsx:44 ~ onGifClick={ ~ response:",
+                  response
+                );
                 await streamerbotClient.doAction(
                   "adad546b-d669-4804-9ba5-77ef887cfa20",
                   {

@@ -1,16 +1,8 @@
 import { StreamerbotClient } from "@streamerbot/client";
-import {
-  PropsWithChildren,
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { PropsWithChildren, createContext, useContext, useRef } from "react";
 
 export type _StreamerbotContextType = {
   streamerbotClient: StreamerbotClient;
-  isObsConnected: boolean;
 };
 
 export const StreamerbotContext = createContext<_StreamerbotContextType>(
@@ -26,25 +18,10 @@ export const useStreamerBotContext = () => {
   return streamerbotContext;
 };
 const StreamerbotProvider = ({ children }: PropsWithChildren) => {
-  const [isObsConnected, setIsObsConnected] = useState(false);
-
-  const { current: client } = useRef(
-    new StreamerbotClient({
-      subscribe: {
-        Obs: ["Connected", "Disconnected"],
-      },
-    })
-  );
-
-  useEffect(() => {
-    client.on("Obs.Connected", () => setIsObsConnected(true));
-    client.on("Obs.Disconnected", () => setIsObsConnected(false));
-  }, [client]);
+  const { current: client } = useRef(new StreamerbotClient());
 
   return (
-    <StreamerbotContext.Provider
-      value={{ streamerbotClient: client, isObsConnected }}
-    >
+    <StreamerbotContext.Provider value={{ streamerbotClient: client }}>
       {children}
     </StreamerbotContext.Provider>
   );

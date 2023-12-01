@@ -51,7 +51,9 @@ const TickerForm = (props: Props) => {
 
     if (tickerActionId) {
       await client.doAction(tickerActionId, { ...values });
+      form.reset();
     }
+
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
