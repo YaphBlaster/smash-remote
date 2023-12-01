@@ -18,7 +18,13 @@ export const useStreamerBotContext = () => {
   return streamerbotContext;
 };
 const StreamerbotProvider = ({ children }: PropsWithChildren) => {
-  const { current: client } = useRef(new StreamerbotClient());
+  const { current: client } = useRef(
+    new StreamerbotClient({
+      host: process.env.NEXT_PUBLIC_STREAMERBOT_HOST,
+      port: parseInt(process.env.NEXT_PUBLIC_STREAMERBOT_PORT!),
+      endpoint: "/",
+    })
+  );
 
   return (
     <StreamerbotContext.Provider value={{ streamerbotClient: client }}>
