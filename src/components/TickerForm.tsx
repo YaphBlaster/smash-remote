@@ -46,7 +46,7 @@ const TickerForm = (props: Props) => {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const tickerActionId = actionsRaw.find(
-      (action) => action.name === "ShowTicker"
+      (action) => action.name === "Show Ticker"
     )?.id;
 
     if (tickerActionId) {
@@ -101,7 +101,7 @@ const TickerForm = (props: Props) => {
           )}
         />
       </form>
-      <DevTool control={form.control} />
+      {/* <DevTool control={form.control} /> */}
     </Form>
   );
 };

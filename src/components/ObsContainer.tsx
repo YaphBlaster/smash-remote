@@ -9,6 +9,7 @@ import { useColumns } from "../lib/hooks";
 import GiphySearch from "./GiphySearch";
 
 import TickerForm from "./TickerForm";
+import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 
 export type _FetchActionsType = {
   actionsRaw: StreamerbotAction[];
@@ -44,17 +45,17 @@ const ObsContainer = (props: Props) => {
   return isFetching ? (
     <div>Loading</div>
   ) : (
-    <div>
-      <ActionBrowser>
-        <div className="flex flex-col gap-y-6">
-          <TickerForm />
-          <GiphySearch />
-        </div>
+    <ActionBrowser>
+      <div className="flex flex-col gap-y-6">
+        <TickerForm />
+        <GiphySearch />
         {data?.actionsRaw && (
-          <DataTable columns={columns} data={data.actionsRaw} />
+          <ScrollArea className="rounded-md border container py-10 ">
+            <DataTable columns={columns} data={data.actionsRaw} />
+          </ScrollArea>
         )}
-      </ActionBrowser>
-    </div>
+      </div>
+    </ActionBrowser>
   );
 };
 

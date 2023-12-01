@@ -10,28 +10,38 @@ import React, { PropsWithChildren, useContext } from "react";
 
 import { useStreamerBotContext } from "./streamerbot-context";
 import { ScrollArea } from "./ui/scroll-area";
+import { FormLabel } from "./ui/form";
+import { Label } from "./ui/label";
+import { useTheme } from "next-themes";
 
 // the search experience consists of the manager and its child components that use SearchContext
-const SearchExperience = ({ children }: PropsWithChildren) => (
-  <SearchContextManager
-    options={{ rating: "r" }}
-    apiKey={process.env.NEXT_PUBLIC_GIPHY_KEY!}
-  >
-    <GiphySearch />
-  </SearchContextManager>
-);
+const SearchExperience = ({ children }: PropsWithChildren) => {
+  const { resolvedTheme } = useTheme();
+
+  return (
+    <SearchContextManager
+      theme={{ darkMode: resolvedTheme === "dark" }}
+      options={{ rating: "r" }}
+      apiKey={process.env.NEXT_PUBLIC_GIPHY_KEY!}
+    >
+      <GiphySearch />
+    </SearchContextManager>
+  );
+};
 
 type Props = {};
 
 const GiphySearch = (props: Props) => {
   const { streamerbotClient } = useStreamerBotContext();
   const { fetchGifs, searchKey } = useContext(SearchContext);
-  const gf = new GiphyFetch(process.env.NEXT_PUBLIC_GIPHY_KEY!);
 
   return (
-    <div>
-      <SearchBar className="shadow shadow-sm transition-colors border-input border rounded-md" />
-
+    <div className="space-y-2 ">
+      <Label>Send Giphy</Label>
+      <SearchBar
+        className="!bg-transparent dark:text-white  text-red-500 shadow shadow-sm transition-colors border-input border rounded-md"
+        placeholder="giph it to me"
+      />
       {searchKey && (
         <div className="absolute z-[1]">
           <ScrollArea className="h-[200px] rounded-md border p-4 bg-white">
