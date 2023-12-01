@@ -1,5 +1,4 @@
 "use client";
-import React, { PropsWithChildren, useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -8,14 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useStreamerBotContext } from "./streamerbot-context";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "./ui/tooltip";
-import { Circle, VideoIcon, VideoOff } from "lucide-react";
+import { PropsWithChildren } from "react";
 
 type Props = {};
 

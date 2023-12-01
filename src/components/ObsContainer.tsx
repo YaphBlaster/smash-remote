@@ -1,24 +1,13 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import OBSWebSocket from "obs-websocket-js";
-import { Button } from "./ui/button";
-import { StreamerbotAction, StreamerbotClient } from "@streamerbot/client";
+import React from "react";
+import { StreamerbotAction } from "@streamerbot/client";
 import { useQuery } from "@tanstack/react-query";
-import ActionCommand from "./ActionCommand";
 import ActionBrowser from "./ActionBrowser";
 import { DataTable } from "./DataTable";
 import { useStreamerBotContext } from "./streamerbot-context";
 import { useColumns } from "../lib/hooks";
 import GiphySearch from "./GiphySearch";
 
-import { VideoIcon, VideoOffIcon } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "./ui/tooltip";
-import { Badge } from "./ui/badge";
 import TickerForm from "./TickerForm";
 
 export type _FetchActionsType = {
