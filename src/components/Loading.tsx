@@ -5,7 +5,7 @@ type Props = {};
 
 function Loading({}: Props) {
   return (
-    <div className="flex flex-col items-center gap-4 animate-bounce">
+    <div className="flex flex-col items-center gap-4 ">
       <Image
         src="/loading.gif"
         alt="me"

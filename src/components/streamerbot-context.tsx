@@ -13,7 +13,9 @@ export const useStreamerBotContext = () => {
   const streamerbotContext = useContext(StreamerbotContext);
 
   if (!streamerbotContext) {
-    throw new Error("must be used inside a StreamerbotProvider");
+    throw new Error(
+      "useStreamerBotContext should be used within <StreamerbotProvider>"
+    );
   }
   return streamerbotContext;
 };

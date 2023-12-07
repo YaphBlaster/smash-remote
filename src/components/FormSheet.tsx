@@ -1,6 +1,6 @@
 "use client";
 
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useStreamerBotContext } from "./streamerbot-context";
+import { useCooldownBarContext } from "./cooldownbar-context";
 
 const getSchemaKeys = (schema: Zod.ZodType): string[] => {
   // Adjusted: Signature now uses Zod.ZodType to eliminate null& undefined check
@@ -56,17 +57,8 @@ const threeMinutesSchema = z.object({
   humanSpider: z.string().trim().min(2),
 });
 
-const vinceSadSchema = z.object({
-  vince: z.string().trim().min(2),
-});
-
-export const actionIdToSchema: Record<
-  string,
-  typeof threeMinutesSchema | typeof vinceSadSchema
-> = {
+export const actionIdToSchema: Record<string, typeof threeMinutesSchema> = {
   "f7a41a28-ed27-42ce-91bc-2fb8312646ee": threeMinutesSchema,
-
-  "215efc44-8607-4c9a-be64-95d66bd2735f": vinceSadSchema,
 };
 
 const camelToFlat = (input: string) => {
@@ -81,7 +73,9 @@ type Props = {
 
 const FormSheet = ({ children, actionId }: PropsWithChildren<Props>) => {
   const { streamerbotClient } = useStreamerBotContext();
+  const { startTimer } = useCooldownBarContext();
   const schema = actionIdToSchema[actionId];
+  const [isOpen, setIsOpen] = useState(false);
 
   const currentFormKeyList = getSchemaKeys(schema);
 
@@ -91,7 +85,6 @@ const FormSheet = ({ children, actionId }: PropsWithChildren<Props>) => {
     defaultValues: {
       bonesaw: "",
       humanSpider: "",
-      vince: "",
     },
   });
 
@@ -100,12 +93,20 @@ const FormSheet = ({ children, actionId }: PropsWithChildren<Props>) => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     await streamerbotClient.doAction(actionId, { ...values });
+    setIsOpen(false);
+    startTimer();
   }
 
   type _dictionaryType = keyof z.infer<typeof schema>;
 
   return (
-    <Sheet onOpenChange={() => form.reset()}>
+    <Sheet
+      onOpenChange={(open) => {
+        form.reset();
+        setIsOpen(open);
+      }}
+      open={isOpen}
+    >
       <SheetTrigger>{children}</SheetTrigger>
       <SheetContent>
         <SheetHeader>

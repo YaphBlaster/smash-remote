@@ -53,10 +53,6 @@ const TickerForm = (props: Props) => {
       await client.doAction(tickerActionId, { ...values });
       form.reset();
     }
-
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
   }
 
   const tickerTextLength = form.watch("tickerText").length;

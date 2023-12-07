@@ -9,13 +9,18 @@ import { useColumns } from "../lib/hooks";
 import GiphySearch from "./GiphySearch";
 
 import TickerForm from "./TickerForm";
-import { ScrollArea, ScrollBar } from "./ui/scroll-area";
-import Image from "next/image";
+import { ScrollArea } from "./ui/scroll-area";
 import Loading from "./Loading";
+import { Button } from "./ui/button";
 
 export type _FetchActionsType = {
   actionsRaw: StreamerbotAction[];
-  commandMap: Record<string, StreamerbotAction[]>;
+  actionsTableData: Record<string, _DataTableAction>;
+};
+
+export type _DataTableAction = StreamerbotAction & {
+  currentMana: number;
+  manaState: "idle" | "charging";
 };
 
 type Props = {};
@@ -36,7 +41,17 @@ const ObsContainer = (props: Props) => {
         commandMap[action.group] = [{ ...action }];
       }
     });
-    return { actionsRaw: actions, commandMap };
+
+    const idToDataTableActions: Record<string, _DataTableAction> = {};
+    actions.forEach((action) => {
+      idToDataTableActions[action.id] = {
+        ...action,
+        currentMana: 100,
+        manaState: "idle",
+      };
+    });
+
+    return { actionsRaw: actions, actionsTableData: idToDataTableActions };
   };
 
   const { data, isFetching } = useQuery({
@@ -44,16 +59,35 @@ const ObsContainer = (props: Props) => {
     queryFn: fetchActions,
   });
 
+  const replayAction = data?.actionsRaw.find(
+    (action) => action.group === "Replay"
+  );
+
+  const instantReplay = async () => {
+    if (replayAction) {
+      await client.doAction(replayAction?.id);
+    }
+  };
+
   return isFetching ? (
     <Loading />
   ) : (
     <ActionBrowser>
       <div className="flex flex-col gap-y-6">
+        {replayAction ? <Button onClick={instantReplay}>Replay</Button> : null}
         <TickerForm />
         <GiphySearch />
-        {data?.actionsRaw && (
+        {data?.actionsTableData && (
           <ScrollArea className="rounded-md border container py-10 ">
-            <DataTable columns={columns} data={data.actionsRaw} />
+            <DataTable
+              columns={columns}
+              data={
+                data.actionsTableData &&
+                Object.values(data.actionsTableData).filter(
+                  (action) => action.group === "Memes"
+                )
+              }
+            />
           </ScrollArea>
         )}
       </div>

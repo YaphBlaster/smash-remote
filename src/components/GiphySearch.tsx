@@ -6,13 +6,14 @@ import {
   SearchContext,
   SearchContextManager,
 } from "@giphy/react-components";
-import React, { PropsWithChildren, useContext } from "react";
+import React, { PropsWithChildren, useContext, useState } from "react";
 
 import { useStreamerBotContext } from "./streamerbot-context";
 import { ScrollArea } from "./ui/scroll-area";
 import { FormLabel } from "./ui/form";
 import { Label } from "./ui/label";
 import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
 
 // the search experience consists of the manager and its child components that use SearchContext
 const SearchExperience = ({ children }: PropsWithChildren) => {
@@ -41,6 +42,9 @@ const GiphySearch = (props: Props) => {
       <SearchBar
         className="!bg-transparent dark:text-white  text-red-500 shadow shadow-sm transition-colors border-input border rounded-md"
         placeholder="giph it to me"
+        onEnter={(term) => {
+          console.log("term :>> ", term);
+        }}
       />
       {searchKey && (
         <div className="absolute z-[1]">
