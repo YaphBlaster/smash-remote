@@ -12,6 +12,7 @@ import TickerForm from "./TickerForm";
 import { ScrollArea } from "./ui/scroll-area";
 import Loading from "./Loading";
 import { Button } from "./ui/button";
+import { TimerReset } from "lucide-react";
 
 export type _FetchActionsType = {
   actionsRaw: StreamerbotAction[];
@@ -22,6 +23,19 @@ export type _DataTableAction = StreamerbotAction & {
   currentMana: number;
   manaState: "idle" | "charging";
 };
+
+const dataTableActionCategories = [
+  "Ace Ventura",
+  "Cartoons",
+  "Community",
+  "Eric Andrew Show",
+  "Hamilton",
+  "Kylo Ren",
+  "PKMN",
+  "Spongebob",
+  "Trump",
+  "WWE",
+];
 
 type Props = {};
 
@@ -72,9 +86,17 @@ const ObsContainer = (props: Props) => {
   return isFetching ? (
     <Loading />
   ) : (
-    <ActionBrowser>
+    <ActionBrowser
+      footerContent={
+        replayAction ? (
+          <Button onClick={instantReplay} className="self-start ">
+            <TimerReset className="mr-2 h-4 w-4 " />
+            Instant Replay
+          </Button>
+        ) : null
+      }
+    >
       <div className="flex flex-col gap-y-6">
-        {replayAction ? <Button onClick={instantReplay}>Replay</Button> : null}
         <TickerForm />
         <GiphySearch />
         {data?.actionsTableData && (
@@ -83,8 +105,8 @@ const ObsContainer = (props: Props) => {
               columns={columns}
               data={
                 data.actionsTableData &&
-                Object.values(data.actionsTableData).filter(
-                  (action) => action.group === "Memes"
+                Object.values(data.actionsTableData).filter((action) =>
+                  dataTableActionCategories.includes(action.group)
                 )
               }
             />
