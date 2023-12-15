@@ -7,12 +7,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, ReactNode } from "react";
 import { ModeToggle } from "./ModeToggle";
 
-type Props = {};
+type Props = {
+  footerContent: ReactNode;
+};
 
-const ActionBrowser = ({ children }: PropsWithChildren) => {
+const ActionBrowser = ({
+  children,
+  footerContent,
+}: PropsWithChildren<Props>) => {
   return (
     <Card className="w-full min-w-min max-w-3xl">
       <CardHeader>
@@ -25,9 +30,7 @@ const ActionBrowser = ({ children }: PropsWithChildren) => {
         </CardDescription>
       </CardHeader>
       <CardContent>{children}</CardContent>
-      <CardFooter>
-        <p>Card Footer</p>
-      </CardFooter>
+      <CardFooter>{footerContent}</CardFooter>
     </Card>
   );
 };
