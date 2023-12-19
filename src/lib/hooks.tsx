@@ -34,7 +34,16 @@ export const useColumns = () => {
     // },
     {
       accessorKey: "name",
-      header: "Name",
+      header: "Clip",
+      cell: ({ row }) => {
+        const action = row.original;
+
+        return (
+          <div className="md:text-left text-center">
+            {action.tableInfo.name}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "group",
@@ -49,10 +58,33 @@ export const useColumns = () => {
           </Button>
         );
       },
+      filterFn: (row, id, value) => {
+        return value.includes(row.getValue(id));
+      },
       cell: ({ row }) => {
         const action = row.original;
 
         return <div className="md:text-left text-center">{action.group}</div>;
+      },
+    },
+    {
+      id: "tags",
+      header: ({ column }) => {
+        return <div className="text-left ml-3">Tags</div>;
+      },
+
+      cell: ({ row }) => {
+        const action = row.original;
+
+        return (
+          <div className="md:text-left text-center">
+            {action.tableInfo.tags.map((tag) => (
+              <div className="md:text-left text-center" key={tag}>
+                {tag}
+              </div>
+            ))}
+          </div>
+        );
       },
     },
     {

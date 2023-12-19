@@ -20,18 +20,22 @@ export type _FetchActionsType = {
 };
 
 export type _DataTableAction = StreamerbotAction & {
-  currentMana: number;
-  manaState: "idle" | "charging";
+  tableInfo: {
+    name: string;
+    tags: string[];
+  };
 };
 
 const dataTableActionCategories = [
   "Ace Ventura",
   "Cartoons",
   "Community",
-  "Eric Andrew Show",
+  "Eric Andre Show",
   "Hamilton",
   "Kylo Ren",
+  "Memes",
   "PKMN",
+  "Spiderman",
   "Spongebob",
   "Trump",
   "WWE",
@@ -47,25 +51,29 @@ const ObsContainer = (props: Props) => {
   const fetchActions = async () => {
     const { actions } = await client.getActions();
 
-    const commandMap: Record<string, StreamerbotAction[]> = {};
-    actions.forEach((action) => {
-      if (commandMap[action.group]) {
-        commandMap[action.group].push({ ...action });
-      } else {
-        commandMap[action.group] = [{ ...action }];
-      }
-    });
-
+    const actionGroupsSet = new Set<string>();
     const idToDataTableActions: Record<string, _DataTableAction> = {};
     actions.forEach((action) => {
+      const [name, tagsInText] = action.name.split("-");
+      const tags = tagsInText ? tagsInText.slice(1, -1).split(",") : [];
+      if (dataTableActionCategories.includes(action.group)) {
+        actionGroupsSet.add(action.group);
+      }
+
       idToDataTableActions[action.id] = {
         ...action,
-        currentMana: 100,
-        manaState: "idle",
+        tableInfo: {
+          name,
+          tags,
+        },
       };
     });
 
-    return { actionsRaw: actions, actionsTableData: idToDataTableActions };
+    return {
+      actionsRaw: actions,
+      actionTableData: idToDataTableActions,
+      actionTableGroups: Array.from(actionGroupsSet),
+    };
   };
 
   const { data, isFetching } = useQuery({
@@ -99,13 +107,14 @@ const ObsContainer = (props: Props) => {
       <div className="flex flex-col gap-y-6">
         <TickerForm />
         <GiphySearch />
-        {data?.actionsTableData && (
+        {data?.actionTableData && (
           <ScrollArea className="rounded-md border container py-10 ">
             <DataTable
+              groups={data.actionTableGroups}
               columns={columns}
               data={
-                data.actionsTableData &&
-                Object.values(data.actionsTableData).filter((action) =>
+                data.actionTableData &&
+                Object.values(data.actionTableData).filter((action) =>
                   dataTableActionCategories.includes(action.group)
                 )
               }
