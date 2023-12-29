@@ -2,7 +2,7 @@
 import React, { PropsWithChildren } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import StreamerbotProvider from "./streamerbot-context";
+import StreamerbotProvider from "../components/streamerbot-context";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { type ThemeProviderProps } from "next-themes/dist/types";
 const queryClient = new QueryClient();
