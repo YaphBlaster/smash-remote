@@ -24,7 +24,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <div className="flex min-h-screen flex-col items-center justify-between p-24">
+            {children}
+          </div>
         </Providers>
       </body>
     </html>
