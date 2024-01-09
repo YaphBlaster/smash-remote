@@ -12,9 +12,9 @@ datasource db {
 }
 
 model Profile {
-  id          String  @id
-  email       String  @unique
-  displayName String?
+  id          String @id @default(uuid())
+  email       String @unique
+  displayName String
 
   @@map("profile")
 }

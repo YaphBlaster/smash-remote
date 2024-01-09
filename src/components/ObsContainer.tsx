@@ -108,7 +108,7 @@ const ObsContainer = (props: Props) => {
         <TickerForm />
         <GiphySearch />
         {data?.actionTableData && (
-          <ScrollArea className="rounded-md border container py-10 ">
+          <ScrollArea className="rounded-md border  py-10 ">
             <DataTable
               groups={data.actionTableGroups}
               columns={columns}

@@ -24,3 +24,8 @@ const Providers = ({
 };
 
 export default Providers;
+export enum ROUTE_PATHS {
+  ARCADIA = "/arcadia",
+  LOGIN = "/login",
+  DASHBOARD = "/arcadia/dashboard",
+}

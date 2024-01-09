@@ -1,16 +1,21 @@
+import ObsContainer from "@/components/ObsContainer";
 import { createServerSupabaseClient } from "@/lib/serverHooks";
 import { ROUTE_PATHS } from "@/types";
 import { redirect } from "next/navigation";
+import React from "react";
 
-export default async function Landing() {
+type Props = {};
+
+const Dashboard = async (props: Props) => {
   const supabase = createServerSupabaseClient();
   const {
     data: { session },
   } = await supabase.auth.getSession();
 
-  if (session) {
-    redirect(ROUTE_PATHS.ARCADIA);
-  } else {
+  if (!session) {
     redirect(ROUTE_PATHS.LOGIN);
   }
-}
+  return <ObsContainer />;
+};
+
+export default Dashboard;

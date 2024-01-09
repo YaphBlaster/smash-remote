@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "@/lib/providers";
+import { Toaster } from "@/components/ui/sonner";
+import Header from "@/components/Header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,9 +26,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex min-h-screen flex-col items-center justify-between p-24">
-            {children}
-          </div>
+          <Toaster />
+          <div>{children}</div>
         </Providers>
       </body>
     </html>

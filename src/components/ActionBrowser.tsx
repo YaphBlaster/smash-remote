@@ -19,7 +19,7 @@ const ActionBrowser = ({
   footerContent,
 }: PropsWithChildren<Props>) => {
   return (
-    <Card className="w-full min-w-min max-w-3xl">
+    <Card>
       <CardHeader>
         <CardTitle className="flex justify-between ">
           <div>Smash Mouth</div>

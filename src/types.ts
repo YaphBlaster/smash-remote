@@ -4,3 +4,9 @@ type ThreeMinutes = {
 };
 
 type InitialState = ThreeMinutes;
+
+export enum ROUTE_PATHS {
+  LOGIN = "/login",
+  ARCADIA = "/arcadia",
+  DASHBOARD = `${ROUTE_PATHS.ARCADIA}/dashboard`,
+}

@@ -7,8 +7,6 @@ import type { Database } from "@/lib/database.types";
 import prisma from "@/db";
 
 export async function GET(request: NextRequest) {
-  console.log("🚀 hit");
-
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
 
@@ -20,14 +18,13 @@ export async function GET(request: NextRequest) {
     const {
       data: { user },
     } = await supabase.auth.exchangeCodeForSession(code);
-    console.log("🚀 ~ file: route.ts:20 ~ GET ~ user:", user);
 
     if (user) {
-      prisma.profile.create({
+      console.log("got a user");
+      await prisma.profile.create({
         data: {
-          displayName: user?.email!,
+          displayName: user.user_metadata.displayName || user?.email!,
           email: user?.email!,
-          id: user.id,
         },
       });
     }
