@@ -3,10 +3,9 @@ type ThreeMinutes = {
   humanSpider: string;
 };
 
-type InitialState = ThreeMinutes;
+type ThreeMinutes3 = {
+  bonesaw: string;
+  humanSpider: string;
+};
 
-export enum ROUTE_PATHS {
-  LOGIN = "/login",
-  ARCADIA = "/arcadia",
-  DASHBOARD = `${ROUTE_PATHS.ARCADIA}/dashboard`,
-}
+type InitialState = ThreeMinutes3 & ThreeMinutes;

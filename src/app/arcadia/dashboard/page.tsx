@@ -1,6 +1,6 @@
 import ObsContainer from "@/components/ObsContainer";
 import { createServerSupabaseClient } from "@/lib/serverHooks";
-import { ROUTE_PATHS } from "@/types";
+import { ROUTE_PATHS } from "@/enums";
 import { redirect } from "next/navigation";
 import React from "react";
 

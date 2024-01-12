@@ -8,14 +8,16 @@ import { Separator } from "@/components/ui/separator";
 export default function Login() {
   const forceDynamicRoute = cookies();
   const logoFiles = fs
-    .readdirSync(process.cwd() + "/public/logos")
+    .readdirSync(process.cwd() + "/public/images/logos")
     .filter((file) => file.endsWith(".png"));
+  console.log("🚀 ~ Login ~ logoFiles:", logoFiles);
   const randomLogoFile =
     logoFiles[Math.floor(Math.random() * logoFiles.length)];
 
   const backdropFiles = fs
-    .readdirSync(process.cwd() + "/public/backdrops")
+    .readdirSync(process.cwd() + "/public/images/backdrops")
     .filter((file) => file.endsWith(".jpg"));
+  console.log("🚀 ~ Login ~ backdropFiles:", backdropFiles);
   const randomBackdropFile =
     backdropFiles[Math.floor(Math.random() * backdropFiles.length)];
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { createServerSupabaseClient } from "@/lib/serverHooks";
-import SignOutButton from "./SignOutButton";
+import ProfileAvatar from "./ProfileAvatar";
+import HeaderLogo from "./HeaderLogo";
 
 type Props = {};
 
@@ -11,13 +12,12 @@ const Header = async (props: Props) => {
   } = await supabase.auth.getSession();
 
   return (
-    <div className="flex justify-center">
-      <div>
-        <span className="text-secondary-foreground">SMASH</span>
-        <span className="text-primary">MOUTH</span>
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 max-w-screen-2xl items-center">
+        <HeaderLogo />
+        {session ? <ProfileAvatar user={session.user} /> : null}
       </div>
-      {session ? <SignOutButton /> : null}
-    </div>
+    </header>
   );
 };
 

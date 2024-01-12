@@ -42,9 +42,6 @@ const GiphySearch = (props: Props) => {
       <SearchBar
         className="!bg-transparent dark:text-white  text-red-500 shadow shadow-sm transition-colors border-input border rounded-md"
         placeholder="giph it to me"
-        onEnter={(term) => {
-          console.log("term :>> ", term);
-        }}
       />
       {searchKey && (
         <div className="absolute z-[1]">

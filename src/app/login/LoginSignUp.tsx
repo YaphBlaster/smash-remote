@@ -29,7 +29,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Drama, HeartHandshake, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { ROUTE_PATHS } from "@/types";
+import { ROUTE_PATHS } from "@/enums";
 
 const loginFormSchema = z.object({
   email: z.string().email(),

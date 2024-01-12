@@ -94,35 +94,28 @@ const ObsContainer = (props: Props) => {
   return isFetching ? (
     <Loading />
   ) : (
-    <ActionBrowser
-      footerContent={
-        replayAction ? (
-          <Button onClick={instantReplay} className="self-start ">
-            <TimerReset className="mr-2 h-4 w-4 " />
-            Instant Replay
-          </Button>
-        ) : null
-      }
-    >
-      <div className="flex flex-col gap-y-6">
-        <TickerForm />
-        <GiphySearch />
-        {data?.actionTableData && (
-          <ScrollArea className="rounded-md border  py-10 ">
-            <DataTable
-              groups={data.actionTableGroups}
-              columns={columns}
-              data={
-                data.actionTableData &&
-                Object.values(data.actionTableData).filter((action) =>
-                  dataTableActionCategories.includes(action.group)
-                )
-              }
-            />
-          </ScrollArea>
-        )}
-      </div>
-    </ActionBrowser>
+    <div className="flex flex-col gap-y-6">
+      {replayAction ? (
+        <Button onClick={instantReplay} className="self-start ">
+          <TimerReset className="mr-2 h-4 w-4 " />
+          Instant Replay
+        </Button>
+      ) : null}
+      <TickerForm />
+      <GiphySearch />
+      {data?.actionTableData && (
+        <DataTable
+          groups={data.actionTableGroups}
+          columns={columns}
+          data={
+            data.actionTableData &&
+            Object.values(data.actionTableData).filter((action) =>
+              dataTableActionCategories.includes(action.group)
+            )
+          }
+        />
+      )}
+    </div>
   );
 };
 
