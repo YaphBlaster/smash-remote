@@ -100,7 +100,7 @@ const MusicPlayer = (props: Props) => {
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const audioSource = document.getElementById("audio") as HTMLAudioElement;
-  const audioMotion = useRef<AudioMotionAnalyzer[]>([]);
+  const audioMotion = useRef<AudioMotionAnalyzer[] | null[]>([]);
   const albumByArtist = useRef(
     Object.groupBy(jukebox.albums, ({ artist }) => artist)
   );
@@ -108,10 +108,11 @@ const MusicPlayer = (props: Props) => {
   const [currentSongIndex, setCurrentSongIndex] = useState(3);
   const defaultAlbumValue = `${currentAlbum.artist},${currentAlbum.baseURI}`;
   useEffect(() => {
-    if (audioSource) {
+    if (audioSource && audioMotion.current) {
       audioMotion.current[0] = new AudioMotionAnalyzer(
         document.getElementById(`container-${0}`)!,
         {
+          useCanvas: false,
           volume: 0.5,
           source: audioSource,
           connectSpeakers: true,
@@ -119,7 +120,7 @@ const MusicPlayer = (props: Props) => {
       );
     }
     return () => {
-      if (audioMotion.current && audioSource) {
+      if (audioMotion.current[0] && audioSource) {
         audioMotion.current[0].disconnectInput();
       }
     };
@@ -138,28 +139,30 @@ const MusicPlayer = (props: Props) => {
     setCurrentSongIndex(currentSongIndex - 1);
   };
 
-  const [audio, state, controls] = useAudio({
-    id: "audio",
-    src: `${currentAlbum.baseURI}${currentAlbum.tracks[currentSongIndex].url}`,
-    preload: "true",
-    crossOrigin: "anonymous",
-    onCanPlayThrough: () => {
-      controls.play();
-    },
-    onEnded: () => setCurrentSongIndex(currentSongIndex + 1),
-    onLoadStart: () =>
-      dispatch({
-        type: "SetIsLoading",
-        payload: { isLoading: true },
-      }),
-    onLoadedData: () => {
-      dispatch({
-        type: "SetIsLoading",
-        payload: { isLoading: false },
-      });
-    },
-  });
-
+  const [audio, state, controls] = useAudio(
+    <audio
+      id="audio"
+      src={`${currentAlbum.baseURI}${currentAlbum.tracks[currentSongIndex].url}`}
+      preload="true"
+      crossOrigin="anonymous"
+      onCanPlayThrough={() => {
+        controls.play();
+      }}
+      onEnded={() => setCurrentSongIndex(currentSongIndex + 1)}
+      onLoadStart={() =>
+        dispatch({
+          type: "SetIsLoading",
+          payload: { isLoading: true },
+        })
+      }
+      onLoadedData={() => {
+        dispatch({
+          type: "SetIsLoading",
+          payload: { isLoading: false },
+        });
+      }}
+    />
+  );
   const songProgress = (state.time / state.duration) * 100;
 
   const seekAt = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
@@ -241,16 +244,20 @@ const MusicPlayer = (props: Props) => {
               setIsDrawerOpen(open);
               if (open) {
                 setTimeout(() => {
-                  audioMotion.current[1] = new AudioMotionAnalyzer(
-                    document.getElementById(`container-${1}`)!,
-                    {
-                      volume: 0,
-                      source: audioMotion.current[0].connectedSources[0],
-                      connectSpeakers: false,
-                      height: 160,
-                    }
-                  );
+                  if (audioMotion.current[0])
+                    audioMotion.current[1] = new AudioMotionAnalyzer(
+                      document.getElementById(`container-${1}`)!,
+                      {
+                        volume: 0,
+                        source: audioMotion.current[0].connectedSources[0],
+                        connectSpeakers: false,
+                        height: 160,
+                      }
+                    );
                 }, 0);
+              }
+              if (!open) {
+                document.querySelector("canvas")?.remove();
               }
             }}
           >
@@ -324,7 +331,7 @@ const MusicPlayer = (props: Props) => {
                         )}
                       </SelectContent>
                     </Select>
-                    <div className="containers" id="container-1" />
+                    <div className={`containers `} id="container-1" />
                     <div className="flex gap-2 w-full justify-center">
                       <Button
                         onClick={previousSong}
