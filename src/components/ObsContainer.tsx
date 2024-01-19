@@ -79,6 +79,8 @@ const ObsContainer = (props: Props) => {
   const { data, isFetching } = useQuery({
     queryKey: ["actions"],
     queryFn: fetchActions,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
   });
 
   const replayAction = data?.actionsRaw.find(

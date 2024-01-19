@@ -12,9 +12,6 @@ const Dashboard = async (props: Props) => {
     data: { session },
   } = await supabase.auth.getSession();
 
-  if (!session) {
-    redirect(ROUTE_PATHS.LOGIN);
-  }
   return <ObsContainer />;
 };
 

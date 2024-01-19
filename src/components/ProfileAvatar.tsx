@@ -51,7 +51,7 @@ const ProfileAvatar = ({ user }: Props) => {
   };
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger className="">
         <Avatar>
           <AvatarImage src="" />
           <AvatarFallback>

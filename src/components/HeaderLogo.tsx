@@ -20,7 +20,7 @@ const HeaderLogo = (props: Props) => {
 
   if (isDesktop) {
     return (
-      <span className="flex-1 flex items-center">
+      <span className=" flex items-center">
         <Joystick className="h-4 w-4 mr-1 fill-primary" />
         <span className="text-secondary-foreground">SMASH</span>
         <span className="text-primary">MOUTH</span>
@@ -31,9 +31,7 @@ const HeaderLogo = (props: Props) => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <div className="flex-1 ">
-          <Menu />
-        </div>
+        <Menu />
       </SheetTrigger>
       <SheetContent side="left">
         <SheetHeader>
