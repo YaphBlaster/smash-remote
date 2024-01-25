@@ -15,6 +15,7 @@ type Album = {
   name: string;
   tracks: Track[];
   baseURI: string;
+  imageURI: string;
 };
 
 type Track = {

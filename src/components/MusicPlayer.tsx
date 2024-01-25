@@ -1,16 +1,6 @@
 "use client";
-import {
-  MouseEvent,
-  useCallback,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
-import jukebox, {
-  pocketMonstersAnimeOST,
-  smoothMcGroove3,
-} from "@/jukeboxAlbums";
+import { MouseEvent, useEffect, useReducer, useRef, useState } from "react";
+import jukebox, { pocketMonstersAnimeOST } from "@/jukeboxAlbums";
 import { useAudio, useMount } from "react-use";
 import {
   Card,
@@ -22,12 +12,19 @@ import {
 } from "./ui/card";
 import { Button } from "./ui/button";
 import {
+  ChevronDown,
+  Contact,
   Disc3,
   KeySquare,
+  ListMusic,
+  Music4,
   Pause,
   Play,
+  PlaySquare,
   SkipBack,
   SkipForward,
+  Sparkles,
+  Theater,
   Volume1,
   Volume2,
   VolumeX,
@@ -58,11 +55,30 @@ import {
 import Marquee from "react-fast-marquee";
 import { ScrollArea } from "./ui/scroll-area";
 import { Separator } from "./ui/separator";
+import { VISUALIZER_MODES } from "@/enums";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import {
+  Carousel,
+  CarouselApi,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "./ui/carousel";
+import Image from "next/image";
+import { AspectRatio } from "@radix-ui/react-aspect-ratio";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 type Props = {};
 
 type MusicPlayerState = {
+  visualizers: Record<string, AudioMotionAnalyzer>;
+  lastMode: number;
   loading: boolean;
+  current: {
+    track: Track;
+    album: Album;
+  };
 };
 
 type SetIsLoading = {
@@ -72,9 +88,45 @@ type SetIsLoading = {
   };
 };
 
+type SetCurrentTrack = {
+  type: "SetCurrentTrack";
+  payload: {
+    newTrackNumber: number;
+  };
+};
+
+type SetCurrentAlbum = {
+  type: "SetCurrentAlbum";
+  payload: {
+    newAlbum: Album;
+  };
+};
+
+type SetLastVisualizerMode = {
+  type: "SetLastVisualizerMode";
+  payload: {
+    newMode: number;
+  };
+};
+
+type SetupVisualizer = {
+  type: "SetupVisualizer";
+  payload: {
+    visualizerId: string;
+    audioMotionAnalyzer: AudioMotionAnalyzer;
+  };
+};
+
+type Actions =
+  | SetCurrentTrack
+  | SetIsLoading
+  | SetCurrentAlbum
+  | SetLastVisualizerMode
+  | SetupVisualizer;
+
 const reducer = (
   state: MusicPlayerState,
-  action: SetIsLoading
+  action: Actions
 ): MusicPlayerState => {
   switch (action.type) {
     case "SetIsLoading":
@@ -82,73 +134,125 @@ const reducer = (
         ...state,
         loading: action.payload.isLoading,
       };
-
+    case "SetCurrentTrack":
+      return {
+        ...state,
+        current: {
+          ...state.current,
+          track: state.current.album.tracks[action.payload.newTrackNumber - 1],
+        },
+      };
+    case "SetCurrentAlbum":
+      return {
+        ...state,
+        current: {
+          ...state.current,
+          album: action.payload.newAlbum,
+        },
+      };
+    case "SetLastVisualizerMode":
+      return {
+        ...state,
+        lastMode: action.payload.newMode,
+      };
+    case "SetupVisualizer":
+      return {
+        ...state,
+        visualizers: {
+          ...state.visualizers,
+          [action.payload.visualizerId]: action.payload.audioMotionAnalyzer,
+        },
+      };
     default:
       return {
         ...state,
       };
-      break;
   }
 };
 
-const musicPlayerInitialState: MusicPlayerState = { loading: true };
+const musicPlayerInitialState: MusicPlayerState = {
+  visualizers: {},
+  lastMode: 0,
+  loading: true,
+  current: {
+    album: pocketMonstersAnimeOST,
+    track: pocketMonstersAnimeOST.tracks[0],
+  },
+};
 
 const MusicPlayer = (props: Props) => {
   const [musicPlayerState, dispatch] = useReducer(
     reducer,
     musicPlayerInitialState
   );
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const {
+    loading,
+    lastMode,
+    visualizers,
+    current: { album, track },
+  } = musicPlayerState;
   const audioSource = document.getElementById("audio") as HTMLAudioElement;
-  const audioMotion = useRef<AudioMotionAnalyzer[] | null[]>([]);
-  const albumByArtist = useRef(
-    Object.groupBy(jukebox.albums, ({ artist }) => artist)
-  );
-  const [currentAlbum, setCurrentAlbum] = useState(pocketMonstersAnimeOST);
-  const [currentSongIndex, setCurrentSongIndex] = useState(3);
-  const defaultAlbumValue = `${currentAlbum.artist},${currentAlbum.baseURI}`;
+  const albumByArtist = useRef({
+    ...Object.groupBy(jukebox.albums, ({ artist }) => artist),
+    ...Object.groupBy(jukebox.audioBooks, ({ artist }) => artist),
+  });
+
+  const [api, setApi] = useState<CarouselApi>();
+  const firstId = `container-${0}`;
+
   useEffect(() => {
-    if (audioSource && audioMotion.current) {
-      audioMotion.current[0] = new AudioMotionAnalyzer(
-        document.getElementById(`container-${0}`)!,
-        {
-          useCanvas: false,
-          volume: 0.5,
-          source: audioSource,
-          connectSpeakers: true,
-        }
-      );
+    if (!api) {
+      return;
     }
-    return () => {
-      if (audioMotion.current[0] && audioSource) {
-        audioMotion.current[0].disconnectInput();
-      }
-    };
-  }, [audioSource]);
+
+    api.on("settle", (emblaApi, event) => {
+      const index = emblaApi.selectedScrollSnap();
+      dispatch({
+        type: "SetCurrentTrack",
+        payload: { newTrackNumber: index + 1 },
+      });
+    });
+  }, [api]);
+
+  useEffect(() => {
+    if (audioSource && !visualizers[firstId]) {
+      dispatch({
+        type: "SetupVisualizer",
+        payload: {
+          visualizerId: firstId,
+          audioMotionAnalyzer: new AudioMotionAnalyzer(
+            document.getElementById(firstId)!,
+            {
+              mode: 0,
+              useCanvas: false,
+              volume: 0.5,
+              source: audioSource,
+              connectSpeakers: true,
+            }
+          ),
+        },
+      });
+    }
+  }, [audioSource, firstId, lastMode, visualizers]);
 
   const nextSong = () => {
-    const nextSongIndex =
-      currentAlbum?.tracks.length === currentSongIndex + 1
-        ? 0
-        : currentSongIndex + 1;
-
-    setCurrentSongIndex(nextSongIndex);
+    api?.scrollTo(api.selectedScrollSnap() + 1);
   };
 
   const previousSong = () => {
-    setCurrentSongIndex(currentSongIndex - 1);
+    api?.scrollTo(api.selectedScrollSnap() - 1);
   };
 
   const [audio, state, controls] = useAudio(
     <audio
       id="audio"
-      src={`${currentAlbum.baseURI}${currentAlbum.tracks[currentSongIndex].url}`}
+      src={`${album.baseURI}${track.url}`}
       preload="true"
       crossOrigin="anonymous"
       onCanPlayThrough={() => {
         controls.play();
       }}
-      onEnded={() => setCurrentSongIndex(currentSongIndex + 1)}
+      onEnded={nextSong}
       onLoadStart={() =>
         dispatch({
           type: "SetIsLoading",
@@ -163,15 +267,12 @@ const MusicPlayer = (props: Props) => {
       }}
     />
   );
-  const songProgress = (state.time / state.duration) * 100;
 
   const seekAt = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     const mouseClickXPosition = e.pageX - e.currentTarget.offsetLeft;
     const max = e.currentTarget.clientWidth;
     const seekPercent = mouseClickXPosition / max;
-
     const time = state.duration * seekPercent;
-
     controls.seek(time);
   };
 
@@ -191,9 +292,26 @@ const MusicPlayer = (props: Props) => {
     );
   };
 
+  const setNextVisualizer = () => {
+    const currentModeString = VISUALIZER_MODES[visualizers["container-1"].mode];
+    let nextMode =
+      VISUALIZER_MODES[currentModeString as keyof typeof VISUALIZER_MODES] + 1;
+
+    switch (visualizers["container-1"].mode) {
+      case 10:
+        nextMode = VISUALIZER_MODES["Discrete frequencies"];
+        break;
+      case 8:
+        nextMode = VISUALIZER_MODES.Graph;
+        break;
+    }
+
+    visualizers["container-1"].mode = nextMode;
+    dispatch({ type: "SetLastVisualizerMode", payload: { newMode: nextMode } });
+  };
+
   useMount(() => {
     controls.volume(0.7);
-    controls.play();
   });
 
   return (
@@ -204,7 +322,7 @@ const MusicPlayer = (props: Props) => {
       <Card className="w-full max-w-s overflow-hidden gap-2 flex items-center compact border-none">
         <CardHeader className="p-0">
           <CardDescription className="w-16 md:w-44">
-            <Marquee>{currentAlbum?.tracks?.[currentSongIndex].title}/</Marquee>
+            <Marquee>{track.title}/</Marquee>
           </CardDescription>
         </CardHeader>
         <CardContent className="flex min-w-min flex-row p-0 gap-2 self-center ">
@@ -212,7 +330,7 @@ const MusicPlayer = (props: Props) => {
             onClick={previousSong}
             variant="outline"
             size="icon"
-            disabled={!currentSongIndex || musicPlayerState.loading}
+            disabled={!track.number || loading}
           >
             <SkipBack className="h-4 w-4" />
           </Button>
@@ -238,26 +356,29 @@ const MusicPlayer = (props: Props) => {
             <SkipForward className="h-4 w-4" />
           </Button>
           <Drawer
-            dismissible={false}
-            open={isDrawerOpen}
             onOpenChange={(open) => {
-              setIsDrawerOpen(open);
               if (open) {
                 setTimeout(() => {
-                  if (audioMotion.current[0])
-                    audioMotion.current[1] = new AudioMotionAnalyzer(
-                      document.getElementById(`container-${1}`)!,
-                      {
-                        volume: 0,
-                        source: audioMotion.current[0].connectedSources[0],
-                        connectSpeakers: false,
-                        height: 160,
-                      }
-                    );
-                }, 0);
-              }
-              if (!open) {
-                document.querySelector("canvas")?.remove();
+                  if (visualizers[firstId]) {
+                    const id = `container-${1}`;
+                    dispatch({
+                      type: "SetupVisualizer",
+                      payload: {
+                        visualizerId: id,
+                        audioMotionAnalyzer: new AudioMotionAnalyzer(
+                          document.getElementById(`container-${1}`)!,
+                          {
+                            mode: lastMode,
+                            volume: 0,
+                            source: visualizers[firstId].connectedSources[0],
+                            connectSpeakers: false,
+                            height: 160,
+                          }
+                        ),
+                      },
+                    });
+                  }
+                });
               }
             }}
           >
@@ -265,175 +386,229 @@ const MusicPlayer = (props: Props) => {
               <Button variant="ghost" asChild size="icon">
                 <Disc3
                   className={`${
-                    isDrawerOpen && "animate-spin"
-                  } hover:animate-spin`}
+                    state.playing && "animate-spin"
+                  } hover:stroke-primary hover:bg-transparent`}
                 />
               </Button>
             </DrawerTrigger>
             <DrawerContent className="flex items-center">
-              <DrawerHeader>
-                <DrawerClose className="right-0">
-                  <Button variant="outline">Close</Button>
-                </DrawerClose>
-                <DrawerTitle>
-                  {currentAlbum.artist}-{currentAlbum.name}
+              <DrawerHeader className="gap-4">
+                <DrawerTitle className="text-center">
+                  {album.artist}
                 </DrawerTitle>
                 <DrawerDescription>
-                  {currentAlbum?.tracks?.[currentSongIndex].title}
-                </DrawerDescription>
-              </DrawerHeader>
-              <div className="flex gap-2 flex-col items-center md:flex-row lg:flex-row ">
-                <Card className="w-80">
-                  <CardHeader>
-                    <CardTitle>
-                      <div className="flex gap-2">
-                        <KeySquare className="h-4 w-4" />{" "}
-                        <span>Keygen Jukebox</span>
-                      </div>
-                    </CardTitle>
-                    <CardDescription>
-                      {currentAlbum?.tracks?.[currentSongIndex].title}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex flex-col gap-5">
-                    <Select
-                      defaultValue={defaultAlbumValue}
-                      onValueChange={(value) => {
-                        const [artistName, baseURI] = value.split(",");
-                        const album = getSpecificAlbum({
-                          artistName,
-                          baseURI,
+                  <Select
+                    defaultValue={`${album.baseURI},${album.artist}`}
+                    onValueChange={(value) => {
+                      const [baseURI, ...artists] = value.split(",");
+
+                      const album = getSpecificAlbum({
+                        artistName: artists.join(),
+                        baseURI,
+                      });
+                      if (album) {
+                        dispatch({
+                          type: "SetCurrentAlbum",
+                          payload: { newAlbum: album },
                         });
-                        if (album) {
-                          setCurrentAlbum(album);
-                          setCurrentSongIndex(0);
-                        }
-                      }}
-                    >
-                      <SelectTrigger className="w-[280px]">
-                        <SelectValue placeholder="Select an album" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(albumByArtist.current).map(
-                          ([artist, albums]) => (
-                            <SelectGroup key={artist}>
-                              <SelectLabel>{artist}</SelectLabel>
+                        dispatch({
+                          type: "SetCurrentTrack",
+                          payload: { newTrackNumber: 1 },
+                        });
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-[280px]">
+                      <SelectValue placeholder="Select an album" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(albumByArtist.current).map(
+                        ([artist, albums], index) => (
+                          <SelectGroup key={artist} className="flex flex-col ">
+                            <SelectLabel>{artist}</SelectLabel>
+                            <span>
                               {albums?.map((album) => (
                                 <SelectItem
                                   key={album.baseURI}
-                                  value={`${artist},${album.baseURI}`}
+                                  value={`${album.baseURI},${artist}`}
                                 >
                                   {album.name}
                                 </SelectItem>
                               ))}
-                            </SelectGroup>
-                          )
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <div className={`containers `} id="container-1" />
-                    <div className="flex gap-2 w-full justify-center">
-                      <Button
-                        onClick={previousSong}
-                        variant="outline"
-                        size="icon"
-                        disabled={!currentSongIndex || musicPlayerState.loading}
-                      >
-                        <SkipBack className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        onClick={playToggle}
-                        variant="outline"
-                        size="icon"
-                        disabled={musicPlayerState.loading}
-                      >
-                        {state.paused ? (
-                          <Play className="h-4 w-4" />
-                        ) : (
-                          <Pause className="h-4 w-4" />
-                        )}
-                      </Button>
+                            </span>
+                            {albums && index !== albums.length ? (
+                              <Separator />
+                            ) : null}
+                          </SelectGroup>
+                        )
+                      )}
+                    </SelectContent>
+                  </Select>
+                </DrawerDescription>
+              </DrawerHeader>
 
-                      <Button
-                        onClick={nextSong}
-                        variant="outline"
-                        size="icon"
-                        disabled={musicPlayerState.loading}
-                      >
-                        <SkipForward className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="flex gap-2 items-center">
-                      <span>{secondsToMinutes(state.time)}</span>
-                      <Progress
-                        className="cursor-pointer"
-                        onClick={(e) => seekAt(e)}
-                        value={songProgress}
-                      />
-                      <span>{secondsToMinutes(state.duration)}</span>
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <div className="flex gap-2 w-full">
-                      <Button
-                        onClick={state.muted ? controls.unmute : controls.mute}
-                        variant="outline"
-                        size="icon"
-                      >
-                        {state.muted ? (
-                          <VolumeX className="h-4 w-4" />
-                        ) : !state.volume ? (
-                          <VolumeX className="h-4 w-4" />
-                        ) : state.volume < 0.6 ? (
-                          <Volume1 className="h-4 w-4" />
-                        ) : (
-                          <Volume2 className="h-4 w-4" />
-                        )}
-                      </Button>
+              <Card className="w-[400px] h-[540px] ">
+                <Tabs defaultValue="now-playing">
+                  <CardHeader>
+                    <TabsList className="justify-around">
+                      <TabsTrigger value="now-playing" className="w-full">
+                        <PlaySquare />
+                      </TabsTrigger>
+                      <TabsTrigger value="tracks" className="w-full">
+                        <ListMusic />
+                      </TabsTrigger>
+                    </TabsList>
+                  </CardHeader>
+                  <TabsContent value="now-playing">
+                    <CardContent className="flex flex-col gap-5">
+                      <Carousel setApi={setApi} opts={{ loop: true }}>
+                        <CarouselContent>
+                          {album.tracks.map((track) => (
+                            <CarouselItem key={track.url}>
+                              <Card className="h-full">
+                                <CardHeader className="pb-0" />
 
-                      <Slider
-                        defaultValue={[69 + 1]}
-                        max={100}
-                        step={1}
-                        value={[state.volume * 100]}
-                        className=" cursor-pointer"
-                        onValueChange={([value]) => {
-                          controls.volume(value / 100);
-                        }}
-                        disabled={state.muted}
-                      />
-                      <span>{Math.floor(state.volume * 100)}</span>
-                    </div>
-                  </CardFooter>
-                </Card>
-                <ScrollArea className=" h-36 md:h-[520px] w-full rounded-md border">
-                  <div className="p-6">
-                    <h4 className="mb-4 text-sm font-medium leading-none">
-                      Tracks
-                    </h4>
+                                <CardContent>
+                                  <Image
+                                    width={200}
+                                    height={200}
+                                    src={album.imageURI}
+                                    alt="album-image"
+                                    className="m-auto rounded-sm aspect-square"
+                                    quality={50}
+                                    priority
+                                  />
+                                </CardContent>
+                                <CardFooter className="whitespace-nowrap">
+                                  <CardTitle className="overflow-hidden text-ellipsis">
+                                    {track.title}
+                                  </CardTitle>
+                                </CardFooter>
+                              </Card>
+                            </CarouselItem>
+                          ))}
+                        </CarouselContent>
+                      </Carousel>
 
-                    {currentAlbum.tracks.map((track) => (
-                      <>
+                      <div className="flex gap-2 items-center">
+                        <span>{secondsToMinutes(state.time)}</span>
+                        <Progress
+                          className="cursor-pointer"
+                          onClick={(e) => seekAt(e)}
+                          value={(state.time / state.duration) * 100}
+                        />
+                        <span>{secondsToMinutes(state.duration)}</span>
+                      </div>
+                      <div className="flex gap-2 w-full justify-center">
                         <Button
-                          defaultChecked={true}
-                          variant={"outline"}
-                          onClick={() => setCurrentSongIndex(track.number - 1)}
-                          key={track.url}
-                          className={`p-2 text-sm w-64 justify-start ${
-                            track.number === currentSongIndex + 1 &&
-                            "bg-accent rounded-sm"
-                          } `}
+                          onClick={previousSong}
+                          variant="outline"
+                          size="icon"
+                          disabled={!track.number || loading}
                         >
-                          <div className="text-left  whitespace-nowrap w-full overflow-hidden text-ellipsis">
-                            {track.title}
-                          </div>
+                          <SkipBack className="h-4 w-4" />
                         </Button>
-                        <Separator className="my-2" />
-                      </>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </div>
+                        <Button
+                          onClick={playToggle}
+                          variant="outline"
+                          size="icon"
+                          disabled={musicPlayerState.loading}
+                        >
+                          {state.paused ? (
+                            <Play className="h-4 w-4" />
+                          ) : (
+                            <Pause className="h-4 w-4" />
+                          )}
+                        </Button>
+
+                        <Button
+                          onClick={nextSong}
+                          variant="outline"
+                          size="icon"
+                          disabled={musicPlayerState.loading}
+                        >
+                          <SkipForward className="h-4 w-4" />
+                        </Button>
+                      </div>
+
+                      <div className="flex gap-2 w-full">
+                        <Button
+                          onClick={
+                            state.muted ? controls.unmute : controls.mute
+                          }
+                          variant="outline"
+                          size="icon"
+                        >
+                          {state.muted ? (
+                            <VolumeX className="h-4 w-4" />
+                          ) : !state.volume ? (
+                            <VolumeX className="h-4 w-4" />
+                          ) : state.volume < 0.6 ? (
+                            <Volume1 className="h-4 w-4" />
+                          ) : (
+                            <Volume2 className="h-4 w-4" />
+                          )}
+                        </Button>
+
+                        <Slider
+                          defaultValue={[69 + 1]}
+                          max={100}
+                          step={1}
+                          value={[state.volume * 100]}
+                          className=" cursor-pointer"
+                          onValueChange={([value]) => {
+                            controls.volume(value / 100);
+                          }}
+                          disabled={state.muted}
+                        />
+                        <span>{Math.floor(state.volume * 100)}</span>
+                      </div>
+                    </CardContent>
+                  </TabsContent>
+                  <TabsContent value="tracks">
+                    <CardContent className="h-full">
+                      <h4 className="mb-4 text-sm font-medium leading-none">
+                        Tracks
+                      </h4>
+
+                      <ScrollArea className="h-[400px] w-full  ">
+                        {album.tracks.map((trackItem) => (
+                          <>
+                            <Button
+                              defaultChecked={true}
+                              variant={"ghost"}
+                              onClick={() => {
+                                console.log(api);
+                                api?.scrollTo(trackItem.number - 1);
+                              }}
+                              key={trackItem.url}
+                              className={`p-2 text-sm w-4/5 justify-start ${
+                                trackItem.number === track.number &&
+                                "bg-accent rounded-sm"
+                              } `}
+                            >
+                              <div className="text-left  whitespace-nowrap w-full overflow-hidden text-ellipsis">
+                                {trackItem.title}
+                              </div>
+                            </Button>
+                            <Separator className="my-2" />
+                          </>
+                        ))}
+                      </ScrollArea>
+                    </CardContent>
+                  </TabsContent>
+                </Tabs>
+
+                <CardFooter></CardFooter>
+              </Card>
+              <Button
+                asChild
+                variant="ghost"
+                className="h-full cursor-pointer"
+                onClick={setNextVisualizer}
+              >
+                <div className={`containers w-full`} id="container-1" />
+              </Button>
               <DrawerFooter>
                 <DrawerClose>
                   <Button variant="outline">Close</Button>
