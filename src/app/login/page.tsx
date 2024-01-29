@@ -10,14 +10,12 @@ export default function Login() {
   const logoFiles = fs
     .readdirSync(process.cwd() + "/public/images/logos")
     .filter((file) => file.endsWith(".png"));
-  console.log("🚀 ~ Login ~ logoFiles:", logoFiles);
   const randomLogoFile =
     logoFiles[Math.floor(Math.random() * logoFiles.length)];
 
   const backdropFiles = fs
     .readdirSync(process.cwd() + "/public/images/backdrops")
     .filter((file) => file.endsWith(".jpg"));
-  console.log("🚀 ~ Login ~ backdropFiles:", backdropFiles);
   const randomBackdropFile =
     backdropFiles[Math.floor(Math.random() * backdropFiles.length)];
 

@@ -18,16 +18,6 @@ export async function GET(request: NextRequest) {
     const {
       data: { user },
     } = await supabase.auth.exchangeCodeForSession(code);
-
-    if (user) {
-      console.log("got a user");
-      await prisma.profile.create({
-        data: {
-          displayName: user.user_metadata.displayName || user?.email!,
-          email: user?.email!,
-        },
-      });
-    }
   }
 
   // URL to redirect to after sign in process completes

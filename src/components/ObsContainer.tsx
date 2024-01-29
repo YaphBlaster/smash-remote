@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import ActionBrowser from "./ActionBrowser";
 import { DataTable } from "./DataTable";
 import { useStreamerBotContext } from "./streamerbot-context";
-import { useColumns } from "../lib/hooks";
+import { useColumns, useFetchActions } from "../lib/hooks";
 import GiphySearch from "./GiphySearch";
 
 import TickerForm from "./TickerForm";
@@ -48,40 +48,7 @@ const ObsContainer = (props: Props) => {
 
   const columns = useColumns();
 
-  const fetchActions = async () => {
-    const { actions } = await client.getActions();
-
-    const actionGroupsSet = new Set<string>();
-    const idToDataTableActions: Record<string, _DataTableAction> = {};
-    actions.forEach((action) => {
-      const [name, tagsInText] = action.name.split("-");
-      const tags = tagsInText ? tagsInText.slice(1, -1).split(",") : [];
-      if (dataTableActionCategories.includes(action.group)) {
-        actionGroupsSet.add(action.group);
-      }
-
-      idToDataTableActions[action.id] = {
-        ...action,
-        tableInfo: {
-          name,
-          tags,
-        },
-      };
-    });
-
-    return {
-      actionsRaw: actions,
-      actionTableData: idToDataTableActions,
-      actionTableGroups: Array.from(actionGroupsSet),
-    };
-  };
-
-  const { data, isFetching } = useQuery({
-    queryKey: ["actions"],
-    queryFn: fetchActions,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
-  });
+  const { data, isFetching } = useFetchActions();
 
   const replayAction = data?.actionsRaw.find(
     (action) => action.group === "Replay"

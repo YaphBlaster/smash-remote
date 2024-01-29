@@ -44,5 +44,4 @@ const getAlbum = (trackCharacterStartIndex = 0) => {
     baseURI,
     tracks,
   };
-  console.log("🚀 ~ getAlbum ~ album:", album);
 };

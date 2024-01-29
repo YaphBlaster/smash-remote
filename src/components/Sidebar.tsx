@@ -11,7 +11,7 @@ const Sidebar = (props: Props) => {
       <div className="min-w-full table">
         <div className="grid grid-flow-row auto-rows-max text-sm text-left">
           <Link href={ROUTE_PATHS.DASHBOARD}>Data Table</Link>
-          <Link href={ROUTE_PATHS.DASHBOARD}>Price is Right</Link>
+          <Link href={ROUTE_PATHS.PRICE_IS_RIGHT}>Price is Right</Link>
         </div>
       </div>
     </ScrollArea>

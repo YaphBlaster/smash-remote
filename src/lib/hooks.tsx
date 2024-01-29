@@ -7,31 +7,27 @@ import { Button } from "@/components/ui/button";
 import { _DataTableAction, _FetchActionsType } from "@/components/ObsContainer";
 import CooldownBarProvider from "@/components/cooldownbar-context";
 import ActionButtonGroup from "@/components/ActionButtonGroup";
+import { useQuery } from "@tanstack/react-query";
+import { useStreamerBotContext } from "@/components/streamerbot-context";
+import { useEffect, useRef, useState } from "react";
+
+const dataTableActionCategories = [
+  "Ace Ventura",
+  "Cartoons",
+  "Community",
+  "Eric Andre Show",
+  "Hamilton",
+  "Kylo Ren",
+  "Memes",
+  "PKMN",
+  "Spiderman",
+  "Spongebob",
+  "Trump",
+  "WWE",
+];
 
 export const useColumns = () => {
   const columns: ColumnDef<_DataTableAction>[] = [
-    // {
-    //   id: "select",
-    //   header: ({ table }) => (
-    //     <Checkbox
-    //       checked={
-    //         table.getIsAllPageRowsSelected() ||
-    //         (table.getIsSomePageRowsSelected() && "indeterminate")
-    //       }
-    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-    //       aria-label="Select all"
-    //     />
-    //   ),
-    //   cell: ({ row }) => (
-    //     <Checkbox
-    //       checked={row.getIsSelected()}
-    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-    //       aria-label="Select row"
-    //     />
-    //   ),
-    //   enableSorting: false,
-    //   enableHiding: false,
-    // },
     {
       accessorKey: "name",
       header: "Clip",
@@ -105,4 +101,64 @@ export const useColumns = () => {
   ];
 
   return columns;
+};
+
+export const useFetchActions = () => {
+  const { streamerbotClient: client } = useStreamerBotContext();
+
+  const fetchActions = async () => {
+    const { actions } = await client.getActions();
+
+    const actionGroupsSet = new Set<string>();
+    const idToDataTableActions: Record<string, _DataTableAction> = {};
+
+    actions.forEach((action) => {
+      const [name, tagsInText] = action.name.split("-");
+      const tags = tagsInText ? tagsInText.slice(1, -1).split(",") : [];
+      if (dataTableActionCategories.includes(action.group)) {
+        actionGroupsSet.add(action.group);
+      }
+
+      idToDataTableActions[action.id] = {
+        ...action,
+        tableInfo: {
+          name,
+          tags,
+        },
+      };
+    });
+
+    return {
+      actionsRaw: actions,
+      actionTableData: idToDataTableActions,
+      actionTableGroups: Array.from(actionGroupsSet),
+    };
+  };
+
+  return useQuery({
+    queryKey: ["actions"],
+    queryFn: fetchActions,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+  });
+};
+
+export const useThrottleCustom = (value: any, limit: number) => {
+  const [throttledValue, setThrottledValue] = useState(value);
+  const lastRan = useRef(Date.now());
+
+  useEffect(() => {
+    const handler = setTimeout(function () {
+      if (Date.now() - lastRan.current >= limit) {
+        setThrottledValue(value);
+        lastRan.current = Date.now();
+      }
+    }, limit - (Date.now() - lastRan.current));
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, limit]);
+
+  return throttledValue;
 };

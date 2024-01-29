@@ -12,19 +12,13 @@ import {
 } from "./ui/card";
 import { Button } from "./ui/button";
 import {
-  ChevronDown,
-  Contact,
   Disc3,
-  KeySquare,
   ListMusic,
-  Music4,
   Pause,
   Play,
   PlaySquare,
   SkipBack,
   SkipForward,
-  Sparkles,
-  Theater,
   Volume1,
   Volume2,
   VolumeX,
@@ -62,12 +56,8 @@ import {
   CarouselApi,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "./ui/carousel";
 import Image from "next/image";
-import { AspectRatio } from "@radix-ui/react-aspect-ratio";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 type Props = {};
 
@@ -170,13 +160,16 @@ const reducer = (
   }
 };
 
+const defaultAlbum = pocketMonstersAnimeOST;
+const defaultTrack = pocketMonstersAnimeOST.tracks[0];
+
 const musicPlayerInitialState: MusicPlayerState = {
   visualizers: {},
   lastMode: 0,
   loading: true,
   current: {
     album: pocketMonstersAnimeOST,
-    track: pocketMonstersAnimeOST.tracks[0],
+    track: defaultTrack,
   },
 };
 
@@ -368,11 +361,28 @@ const MusicPlayer = (props: Props) => {
                         audioMotionAnalyzer: new AudioMotionAnalyzer(
                           document.getElementById(`container-${1}`)!,
                           {
-                            mode: lastMode,
+                            bgAlpha: 0,
                             volume: 0,
                             source: visualizers[firstId].connectedSources[0],
                             connectSpeakers: false,
-                            height: 160,
+                            mode: 0,
+                            channelLayout: "single",
+                            frequencyScale: "bark",
+                            gradient: "rainbow",
+                            linearAmplitude: true,
+                            linearBoost: 1.8,
+                            maxFreq: 20000,
+                            minFreq: 20,
+                            mirror: 0,
+                            overlay: true,
+                            radial: false,
+                            reflexAlpha: 0.25,
+                            reflexBright: 1,
+                            reflexFit: true,
+                            reflexRatio: 0.3,
+                            showPeaks: true,
+                            weightingFilter: "D",
+                            showScaleX: false,
                           }
                         ),
                       },
@@ -448,156 +458,137 @@ const MusicPlayer = (props: Props) => {
               </DrawerHeader>
 
               <Card className="w-[400px] h-[540px] ">
-                <Tabs defaultValue="now-playing">
-                  <CardHeader>
-                    <TabsList className="justify-around">
-                      <TabsTrigger value="now-playing" className="w-full">
-                        <PlaySquare />
-                      </TabsTrigger>
-                      <TabsTrigger value="tracks" className="w-full">
-                        <ListMusic />
-                      </TabsTrigger>
-                    </TabsList>
-                  </CardHeader>
-                  <TabsContent value="now-playing">
-                    <CardContent className="flex flex-col gap-5">
-                      <Carousel setApi={setApi} opts={{ loop: true }}>
-                        <CarouselContent>
-                          {album.tracks.map((track) => (
-                            <CarouselItem key={track.url}>
-                              <Card className="h-full">
-                                <CardHeader className="pb-0" />
-
-                                <CardContent>
-                                  <Image
-                                    width={200}
-                                    height={200}
-                                    src={album.imageURI}
-                                    alt="album-image"
-                                    className="m-auto rounded-sm aspect-square"
-                                    quality={50}
-                                    priority
-                                  />
-                                </CardContent>
-                                <CardFooter className="whitespace-nowrap">
-                                  <CardTitle className="overflow-hidden text-ellipsis">
-                                    {track.title}
-                                  </CardTitle>
-                                </CardFooter>
-                              </Card>
-                            </CarouselItem>
-                          ))}
-                        </CarouselContent>
-                      </Carousel>
-
-                      <div className="flex gap-2 items-center">
-                        <span>{secondsToMinutes(state.time)}</span>
-                        <Progress
-                          className="cursor-pointer"
-                          onClick={(e) => seekAt(e)}
-                          value={(state.time / state.duration) * 100}
-                        />
-                        <span>{secondsToMinutes(state.duration)}</span>
-                      </div>
-                      <div className="flex gap-2 w-full justify-center">
-                        <Button
-                          onClick={previousSong}
-                          variant="outline"
-                          size="icon"
-                          disabled={!track.number || loading}
+                <CardHeader>
+                  <Select
+                    value={(api && api.selectedScrollSnap() + 1)?.toString()}
+                    defaultValue={defaultTrack.number.toString()}
+                    onValueChange={(value) => {
+                      api?.scrollTo(Number(value) - 1);
+                    }}
+                  >
+                    <SelectTrigger className="w-[280px]">
+                      <SelectValue placeholder="Track List" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {album.tracks.map((track) => (
+                        <SelectItem
+                          onClick={() => console.log("test")}
+                          value={track.number.toString()}
+                          key={track.url}
                         >
-                          <SkipBack className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          onClick={playToggle}
-                          variant="outline"
-                          size="icon"
-                          disabled={musicPlayerState.loading}
-                        >
-                          {state.paused ? (
-                            <Play className="h-4 w-4" />
-                          ) : (
-                            <Pause className="h-4 w-4" />
-                          )}
-                        </Button>
+                          {track.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </CardHeader>
+                <CardContent>
+                  <Carousel
+                    setApi={setApi}
+                    opts={{ loop: true }}
+                    className="w-full max-w-xs "
+                  >
+                    <CarouselContent>
+                      {album.tracks.map((track) => (
+                        <CarouselItem key={track.url}>
+                          <Card className="h-full">
+                            <CardHeader className="pb-0" />
 
-                        <Button
-                          onClick={nextSong}
-                          variant="outline"
-                          size="icon"
-                          disabled={musicPlayerState.loading}
-                        >
-                          <SkipForward className="h-4 w-4" />
-                        </Button>
-                      </div>
+                            <CardContent>
+                              <Image
+                                width={200}
+                                height={200}
+                                src={album.imageURI}
+                                alt="album-image"
+                                className="m-auto rounded-sm aspect-square"
+                                quality={50}
+                                priority
+                              />
+                            </CardContent>
+                            <CardFooter className="whitespace-nowrap">
+                              <CardTitle className="overflow-hidden text-ellipsis">
+                                {track.title}
+                              </CardTitle>
+                            </CardFooter>
+                          </Card>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                  </Carousel>
+                  <div>
+                    {" "}
+                    <div className="flex gap-2 items-center">
+                      <span>{secondsToMinutes(state.time)}</span>
+                      <Progress
+                        className="cursor-pointer"
+                        onClick={(e) => seekAt(e)}
+                        value={(state.time / state.duration) * 100}
+                      />
+                      <span>{secondsToMinutes(state.duration)}</span>
+                    </div>
+                    <div className="flex gap-2 w-full justify-center">
+                      <Button
+                        onClick={previousSong}
+                        variant="outline"
+                        size="icon"
+                        disabled={!track.number || loading}
+                      >
+                        <SkipBack className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        onClick={playToggle}
+                        variant="outline"
+                        size="icon"
+                        disabled={musicPlayerState.loading}
+                      >
+                        {state.paused ? (
+                          <Play className="h-4 w-4" />
+                        ) : (
+                          <Pause className="h-4 w-4" />
+                        )}
+                      </Button>
 
-                      <div className="flex gap-2 w-full">
-                        <Button
-                          onClick={
-                            state.muted ? controls.unmute : controls.mute
-                          }
-                          variant="outline"
-                          size="icon"
-                        >
-                          {state.muted ? (
-                            <VolumeX className="h-4 w-4" />
-                          ) : !state.volume ? (
-                            <VolumeX className="h-4 w-4" />
-                          ) : state.volume < 0.6 ? (
-                            <Volume1 className="h-4 w-4" />
-                          ) : (
-                            <Volume2 className="h-4 w-4" />
-                          )}
-                        </Button>
+                      <Button
+                        onClick={nextSong}
+                        variant="outline"
+                        size="icon"
+                        disabled={musicPlayerState.loading}
+                      >
+                        <SkipForward className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex gap-2 w-full">
+                      <Button
+                        onClick={state.muted ? controls.unmute : controls.mute}
+                        variant="outline"
+                        size="icon"
+                      >
+                        {state.muted ? (
+                          <VolumeX className="h-4 w-4" />
+                        ) : !state.volume ? (
+                          <VolumeX className="h-4 w-4" />
+                        ) : state.volume < 0.6 ? (
+                          <Volume1 className="h-4 w-4" />
+                        ) : (
+                          <Volume2 className="h-4 w-4" />
+                        )}
+                      </Button>
 
-                        <Slider
-                          defaultValue={[69 + 1]}
-                          max={100}
-                          step={1}
-                          value={[state.volume * 100]}
-                          className=" cursor-pointer"
-                          onValueChange={([value]) => {
-                            controls.volume(value / 100);
-                          }}
-                          disabled={state.muted}
-                        />
-                        <span>{Math.floor(state.volume * 100)}</span>
-                      </div>
-                    </CardContent>
-                  </TabsContent>
-                  <TabsContent value="tracks">
-                    <CardContent className="h-full">
-                      <h4 className="mb-4 text-sm font-medium leading-none">
-                        Tracks
-                      </h4>
-
-                      <ScrollArea className="h-[400px] w-full  ">
-                        {album.tracks.map((trackItem) => (
-                          <>
-                            <Button
-                              defaultChecked={true}
-                              variant={"ghost"}
-                              onClick={() => {
-                                console.log(api);
-                                api?.scrollTo(trackItem.number - 1);
-                              }}
-                              key={trackItem.url}
-                              className={`p-2 text-sm w-4/5 justify-start ${
-                                trackItem.number === track.number &&
-                                "bg-accent rounded-sm"
-                              } `}
-                            >
-                              <div className="text-left  whitespace-nowrap w-full overflow-hidden text-ellipsis">
-                                {trackItem.title}
-                              </div>
-                            </Button>
-                            <Separator className="my-2" />
-                          </>
-                        ))}
-                      </ScrollArea>
-                    </CardContent>
-                  </TabsContent>
-                </Tabs>
+                      <Slider
+                        defaultValue={[69 + 1]}
+                        max={100}
+                        step={1}
+                        value={[state.volume * 100]}
+                        className=" cursor-pointer"
+                        onValueChange={([value]) => {
+                          controls.volume(value / 100);
+                        }}
+                        disabled={state.muted}
+                      />
+                      <span>{Math.floor(state.volume * 100)}</span>
+                    </div>{" "}
+                  </div>
+                </CardContent>
 
                 <CardFooter></CardFooter>
               </Card>
@@ -607,7 +598,10 @@ const MusicPlayer = (props: Props) => {
                 className="h-full cursor-pointer"
                 onClick={setNextVisualizer}
               >
-                <div className={`containers w-full`} id="container-1" />
+                <div
+                  className={`containers w-full h-full absolute -z-10`}
+                  id="container-1"
+                />
               </Button>
               <DrawerFooter>
                 <DrawerClose>
