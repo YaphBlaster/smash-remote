@@ -58,6 +58,7 @@ import {
   CarouselItem,
 } from "./ui/carousel";
 import Image from "next/image";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 type Props = {};
 
@@ -349,6 +350,7 @@ const MusicPlayer = (props: Props) => {
             <SkipForward className="h-4 w-4" />
           </Button>
           <Drawer
+            dismissible={false}
             onOpenChange={(open) => {
               if (open) {
                 setTimeout(() => {
@@ -457,8 +459,8 @@ const MusicPlayer = (props: Props) => {
                 </DrawerDescription>
               </DrawerHeader>
 
-              <Card className="w-[400px] h-[540px] ">
-                <CardHeader>
+              <Card className="w-[400px] h-[540px] bg-card/[.2] backdrop-blur-sm ">
+                <CardHeader className="flex-row gap-4">
                   <Select
                     value={(api && api.selectedScrollSnap() + 1)?.toString()}
                     defaultValue={defaultTrack.number.toString()}
@@ -466,7 +468,7 @@ const MusicPlayer = (props: Props) => {
                       api?.scrollTo(Number(value) - 1);
                     }}
                   >
-                    <SelectTrigger className="w-[280px]">
+                    <SelectTrigger>
                       <SelectValue placeholder="Track List" />
                     </SelectTrigger>
                     <SelectContent>
@@ -481,8 +483,35 @@ const MusicPlayer = (props: Props) => {
                       ))}
                     </SelectContent>
                   </Select>
+                  <Popover>
+                    <PopoverTrigger>
+                      {state.muted ? (
+                        <VolumeX className="h-4 w-4" />
+                      ) : !state.volume ? (
+                        <VolumeX className="h-4 w-4" />
+                      ) : state.volume < 0.6 ? (
+                        <Volume1 className="h-4 w-4" />
+                      ) : (
+                        <Volume2 className="h-4 w-4" />
+                      )}
+                    </PopoverTrigger>
+                    <PopoverContent className="flex flex-col">
+                      <Slider
+                        defaultValue={[69 + 1]}
+                        max={100}
+                        step={1}
+                        value={[state.volume * 100]}
+                        className=" cursor-pointer"
+                        onValueChange={([value]) => {
+                          controls.volume(value / 100);
+                        }}
+                        disabled={state.muted}
+                      />
+                      <span>{Math.floor(state.volume * 100)}</span>
+                    </PopoverContent>
+                  </Popover>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex items-center flex-col gap-2">
                   <Carousel
                     setApi={setApi}
                     opts={{ loop: true }}
@@ -491,7 +520,7 @@ const MusicPlayer = (props: Props) => {
                     <CarouselContent>
                       {album.tracks.map((track) => (
                         <CarouselItem key={track.url}>
-                          <Card className="h-full">
+                          <Card className="h-full bg-transparent">
                             <CardHeader className="pb-0" />
 
                             <CardContent>
@@ -515,10 +544,9 @@ const MusicPlayer = (props: Props) => {
                       ))}
                     </CarouselContent>
                   </Carousel>
-                  <div>
-                    {" "}
+                  <div className="container">
                     <div className="flex gap-2 items-center">
-                      <span>{secondsToMinutes(state.time)}</span>
+                      <span className="w-">{secondsToMinutes(state.time)}</span>
                       <Progress
                         className="cursor-pointer"
                         onClick={(e) => seekAt(e)}
@@ -557,36 +585,6 @@ const MusicPlayer = (props: Props) => {
                         <SkipForward className="h-4 w-4" />
                       </Button>
                     </div>
-                    <div className="flex gap-2 w-full">
-                      <Button
-                        onClick={state.muted ? controls.unmute : controls.mute}
-                        variant="outline"
-                        size="icon"
-                      >
-                        {state.muted ? (
-                          <VolumeX className="h-4 w-4" />
-                        ) : !state.volume ? (
-                          <VolumeX className="h-4 w-4" />
-                        ) : state.volume < 0.6 ? (
-                          <Volume1 className="h-4 w-4" />
-                        ) : (
-                          <Volume2 className="h-4 w-4" />
-                        )}
-                      </Button>
-
-                      <Slider
-                        defaultValue={[69 + 1]}
-                        max={100}
-                        step={1}
-                        value={[state.volume * 100]}
-                        className=" cursor-pointer"
-                        onValueChange={([value]) => {
-                          controls.volume(value / 100);
-                        }}
-                        disabled={state.muted}
-                      />
-                      <span>{Math.floor(state.volume * 100)}</span>
-                    </div>{" "}
                   </div>
                 </CardContent>
 
