@@ -59,6 +59,8 @@ import {
 } from "./ui/carousel";
 import Image from "next/image";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { SliderThumb, Thumb } from "@radix-ui/react-slider";
+import * as SliderPrimitive from "@radix-ui/react-slider";
 
 type Props = {};
 
@@ -263,11 +265,18 @@ const MusicPlayer = (props: Props) => {
   );
 
   const seekAt = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
+    console.log("🚀 ~ seekAt ~ e:", e);
+    console.log("🚀 ~ seekAt ~ e.currentTarget:", e.currentTarget);
     const mouseClickXPosition = e.pageX - e.currentTarget.offsetLeft;
+    console.log("🚀 ~ seekAt ~ mouseClickXPosition:", mouseClickXPosition);
+    console.log({ ...e.currentTarget });
+
     const max = e.currentTarget.clientWidth;
+    console.log("🚀 ~ seekAt ~ max:", max);
     const seekPercent = mouseClickXPosition / max;
     const time = state.duration * seekPercent;
-    controls.seek(time);
+
+    // controls.seek(time);
   };
 
   const playToggle = () => {
@@ -459,7 +468,7 @@ const MusicPlayer = (props: Props) => {
                 </DrawerDescription>
               </DrawerHeader>
 
-              <Card className="w-[400px] h-[540px] bg-card/[.2] backdrop-blur-sm ">
+              <Card className="w-[400px] h-[500px] bg-card/[.2] backdrop-blur-sm ">
                 <CardHeader className="flex-row gap-4">
                   <Select
                     value={(api && api.selectedScrollSnap() + 1)?.toString()}
@@ -468,17 +477,19 @@ const MusicPlayer = (props: Props) => {
                       api?.scrollTo(Number(value) - 1);
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="overflow-hidden">
                       <SelectValue placeholder="Track List" />
                     </SelectTrigger>
                     <SelectContent>
                       {album.tracks.map((track) => (
                         <SelectItem
+                          key={track.url}
                           onClick={() => console.log("test")}
                           value={track.number.toString()}
-                          key={track.url}
                         >
-                          {track.title}
+                          <div className="text-ellipsis overflow-hidden whitespace-nowrap max-w-xs">
+                            {track.title}
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -506,7 +517,9 @@ const MusicPlayer = (props: Props) => {
                           controls.volume(value / 100);
                         }}
                         disabled={state.muted}
-                      />
+                      >
+                        <SliderPrimitive.Thumb className="block h-5 w-5 rounded-full border-2 border-primary bg-background ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50" />
+                      </Slider>
                       <span>{Math.floor(state.volume * 100)}</span>
                     </PopoverContent>
                   </Popover>
@@ -544,47 +557,50 @@ const MusicPlayer = (props: Props) => {
                       ))}
                     </CarouselContent>
                   </Carousel>
-                  <div className="container">
-                    <div className="flex gap-2 items-center">
-                      <span className="w-">{secondsToMinutes(state.time)}</span>
-                      <Progress
-                        className="cursor-pointer"
-                        onClick={(e) => seekAt(e)}
-                        value={(state.time / state.duration) * 100}
-                      />
-                      <span>{secondsToMinutes(state.duration)}</span>
-                    </div>
-                    <div className="flex gap-2 w-full justify-center">
-                      <Button
-                        onClick={previousSong}
-                        variant="outline"
-                        size="icon"
-                        disabled={!track.number || loading}
-                      >
-                        <SkipBack className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        onClick={playToggle}
-                        variant="outline"
-                        size="icon"
-                        disabled={musicPlayerState.loading}
-                      >
-                        {state.paused ? (
-                          <Play className="h-4 w-4" />
-                        ) : (
-                          <Pause className="h-4 w-4" />
-                        )}
-                      </Button>
 
-                      <Button
-                        onClick={nextSong}
-                        variant="outline"
-                        size="icon"
-                        disabled={musicPlayerState.loading}
-                      >
-                        <SkipForward className="h-4 w-4" />
-                      </Button>
-                    </div>
+                  <div className="flex gap-2 items-center w-full">
+                    <span>{secondsToMinutes(state.time)}</span>
+                    <Slider
+                      max={100}
+                      step={1}
+                      defaultValue={[0]}
+                      onValueChange={([value]) => {
+                        controls.seek(state.duration * (value / 100));
+                      }}
+                      value={[(state.time / state.duration) * 100]}
+                    />
+                    <span>{secondsToMinutes(state.duration)}</span>
+                  </div>
+                  <div className="flex gap-2 w-full justify-center">
+                    <Button
+                      onClick={previousSong}
+                      variant="outline"
+                      size="icon"
+                      disabled={!track.number || loading}
+                    >
+                      <SkipBack className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      onClick={playToggle}
+                      variant="outline"
+                      size="icon"
+                      disabled={musicPlayerState.loading}
+                    >
+                      {state.paused ? (
+                        <Play className="h-4 w-4" />
+                      ) : (
+                        <Pause className="h-4 w-4" />
+                      )}
+                    </Button>
+
+                    <Button
+                      onClick={nextSong}
+                      variant="outline"
+                      size="icon"
+                      disabled={musicPlayerState.loading}
+                    >
+                      <SkipForward className="h-4 w-4" />
+                    </Button>
                   </div>
                 </CardContent>
 
