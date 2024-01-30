@@ -19,7 +19,10 @@ export const secondsToMinutes = (seconds: number) => {
   return `${minutes}:${extraSeconds.toString().slice(0, 2)}`;
 };
 
-const getAlbum = (trackCharacterStartIndex = 0) => {
+const getAlbum = (
+  trackCharacterStartIndex = 0,
+  trackCharacterEndIndex = trackCharacterStartIndex + 3
+) => {
   const name = document.querySelector("title")?.innerHTML;
   const allTableLinks = document.querySelectorAll("td>a");
   const mp3Links = [...allTableLinks].filter((element) =>
@@ -27,21 +30,28 @@ const getAlbum = (trackCharacterStartIndex = 0) => {
   );
   const baseURI = mp3Links[0].baseURI;
 
-  const tracks = mp3Links.map((mp3Link) => {
+  const tracks = mp3Links.map((mp3Link, index) => {
     return {
-      title: mp3Link.innerHTML,
+      title: mp3Link.innerHTML
+        .slice(trackCharacterEndIndex)
+        .trim()
+        .replace(".mp3", ""),
       url: mp3Link.getAttribute("href"),
-      number: parseInt(
-        mp3Link.innerHTML
-          .slice(trackCharacterStartIndex, trackCharacterStartIndex + 3)
-          .replace(/\D/g, "")
-      ),
+      number:
+        parseInt(
+          mp3Link.innerHTML
+            .slice(trackCharacterStartIndex, trackCharacterEndIndex)
+            .replace(/\D/g, "")
+        ) || index + 1,
     };
   });
 
   const album = {
+    artist: "",
     name,
     baseURI,
+    imageUri: "",
     tracks,
   };
+  console.log("🚀 ~ getAlbum ~ album:", album);
 };

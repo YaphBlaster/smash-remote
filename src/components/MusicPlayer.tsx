@@ -190,7 +190,6 @@ const MusicPlayer = (props: Props) => {
   const audioSource = document.getElementById("audio") as HTMLAudioElement;
   const albumByArtist = useRef({
     ...Object.groupBy(jukebox.albums, ({ artist }) => artist),
-    ...Object.groupBy(jukebox.audioBooks, ({ artist }) => artist),
   });
 
   const [api, setApi] = useState<CarouselApi>();
@@ -561,6 +560,7 @@ const MusicPlayer = (props: Props) => {
                   <div className="flex gap-2 items-center w-full">
                     <span>{secondsToMinutes(state.time)}</span>
                     <Slider
+                      className="cursor-pointer"
                       max={100}
                       step={1}
                       defaultValue={[0]}

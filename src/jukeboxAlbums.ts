@@ -2428,6 +2428,573 @@ const hpDeathlyHallows: Album = {
   ],
 };
 
+const EightOhEightsAndHeartbreak: Album = {
+  artist: "Kanye West",
+  name: "808's and Heartbreak",
+  baseURI:
+    "https://archive.org/download/808s-heartbreak_202307/808%27s%20and%20heartbreak/",
+  imageURI:
+    "https://archive.org/16/items/808s-heartbreak_202307/808s_%26_Heartbreak.png",
+  tracks: [
+    {
+      title: "Amazing",
+      url: "Amazing.mp3",
+      number: 1,
+    },
+    {
+      title: "Bad News",
+      url: "Bad%20News.mp3",
+      number: 2,
+    },
+    {
+      title: "Coldest Winter",
+      url: "Coldest%20Winter.mp3",
+      number: 3,
+    },
+    {
+      title: "Heartless",
+      url: "Heartless.mp3",
+      number: 4,
+    },
+    {
+      title: "Love Lockdown",
+      url: "Love%20Lockdown.mp3",
+      number: 5,
+    },
+    {
+      title: "Paranoid",
+      url: "Paranoid.mp3",
+      number: 6,
+    },
+    {
+      title: "Pinocchio Story",
+      url: "Pinocchio%20Story.mp3",
+      number: 7,
+    },
+    {
+      title: "RoboCop",
+      url: "RoboCop.mp3",
+      number: 8,
+    },
+    {
+      title: "Say You Will",
+      url: "Say%20You%20Will.mp3",
+      number: 9,
+    },
+    {
+      title: "See You In My Nightmares",
+      url: "See%20You%20In%20My%20Nightmares.mp3",
+      number: 10,
+    },
+    {
+      title: "Street Lights",
+      url: "Street%20Lights.mp3",
+      number: 11,
+    },
+    {
+      title: "Welcome To Heartbreak",
+      url: "Welcome%20To%20Heartbreak.mp3",
+      number: 12,
+    },
+  ],
+};
+
+const creedDiscography: Album = {
+  artist: "Creed",
+  name: "Creed Discography",
+  baseURI:
+    "https://archive.org/download/creed-discography-1997-2015-flac-full-tracks/",
+  imageURI:
+    "https://archive.org/9/items/creed-discography-1997-2015-flac-full-tracks/(01)%201999%20-%20Human%20Clay.jpg?scale=1&rotate=0&scale=1&rotate=0",
+  tracks: [
+    {
+      title: "Torn",
+      url: "%28001%29%20Torn.mp3",
+      number: 1,
+    },
+    {
+      title: "Ode",
+      url: "%28002%29%20Ode.mp3",
+      number: 2,
+    },
+    {
+      title: "My Own Prison",
+      url: "%28003%29%20My%20Own%20Prison.mp3",
+      number: 3,
+    },
+    {
+      title: "Pity For A Dime",
+      url: "%28004%29%20Pity%20For%20A%20Dime.mp3",
+      number: 4,
+    },
+    {
+      title: "In America",
+      url: "%28005%29%20In%20America.mp3",
+      number: 5,
+    },
+    {
+      title: "Illusion",
+      url: "%28006%29%20Illusion.mp3",
+      number: 6,
+    },
+    {
+      title: "Unforgiven",
+      url: "%28007%29%20Unforgiven.mp3",
+      number: 7,
+    },
+    {
+      title: "Sister",
+      url: "%28008%29%20Sister.mp3",
+      number: 8,
+    },
+    {
+      title: "What's This Life For",
+      url: "%28009%29%20What%27s%20This%20Life%20For.mp3",
+      number: 9,
+    },
+    {
+      title: "One",
+      url: "%28010%29%20One.mp3",
+      number: 10,
+    },
+    {
+      title: "Are You Ready",
+      url: "%28011%29%20Are%20You%20Ready.mp3",
+      number: 11,
+    },
+    {
+      title: "What If",
+      url: "%28012%29%20What%20If.mp3",
+      number: 12,
+    },
+    {
+      title: "Beautiful",
+      url: "%28013%29%20Beautiful.mp3",
+      number: 13,
+    },
+    {
+      title: "Say I",
+      url: "%28014%29%20Say%20I.mp3",
+      number: 14,
+    },
+    {
+      title: "Wrong Way",
+      url: "%28015%29%20Wrong%20Way.mp3",
+      number: 15,
+    },
+    {
+      title: "Faceless Man",
+      url: "%28016%29%20Faceless%20Man.mp3",
+      number: 16,
+    },
+    {
+      title: "Never Die",
+      url: "%28017%29%20Never%20Die.mp3",
+      number: 17,
+    },
+    {
+      title: "With Arms Wide Open",
+      url: "%28018%29%20With%20Arms%20Wide%20Open.mp3",
+      number: 18,
+    },
+    {
+      title: "Higher",
+      url: "%28019%29%20Higher.mp3",
+      number: 19,
+    },
+    {
+      title: "Wash Away Those Years",
+      url: "%28020%29%20Wash%20Away%20Those%20Years.mp3",
+      number: 20,
+    },
+    {
+      title: "Inside Us All",
+      url: "%28021%29%20Inside%20Us%20All.mp3",
+      number: 21,
+    },
+    {
+      title: "Bullets",
+      url: "%28022%29%20Bullets.mp3",
+      number: 22,
+    },
+    {
+      title: "Freedom Fighter",
+      url: "%28023%29%20Freedom%20Fighter.mp3",
+      number: 23,
+    },
+    {
+      title: "Who's Got My Back",
+      url: "%28024%29%20Who%27s%20Got%20My%20Back.mp3",
+      number: 24,
+    },
+    {
+      title: "Signs",
+      url: "%28025%29%20Signs.mp3",
+      number: 25,
+    },
+    {
+      title: "One Last Breath",
+      url: "%28026%29%20One%20Last%20Breath.mp3",
+      number: 26,
+    },
+    {
+      title: "My Sacrifice",
+      url: "%28027%29%20My%20Sacrifice.mp3",
+      number: 27,
+    },
+    {
+      title: "Stand Here With Me",
+      url: "%28028%29%20Stand%20Here%20With%20Me.mp3",
+      number: 28,
+    },
+    {
+      title: "Weathered",
+      url: "%28029%29%20Weathered.mp3",
+      number: 29,
+    },
+    {
+      title: "Hide",
+      url: "%28030%29%20Hide.mp3",
+      number: 30,
+    },
+    {
+      title: "Don't Stop Dancing",
+      url: "%28031%29%20Don%27t%20Stop%20Dancing.mp3",
+      number: 31,
+    },
+    {
+      title: "Lullaby",
+      url: "%28032%29%20Lullaby.mp3",
+      number: 32,
+    },
+    {
+      title: "Torn",
+      url: "%28033%29%20Torn.mp3",
+      number: 33,
+    },
+    {
+      title: "My Own Prison",
+      url: "%28034%29%20My%20Own%20Prison.mp3",
+      number: 34,
+    },
+    {
+      title: "What's This Life For",
+      url: "%28035%29%20What%27s%20This%20Life%20For.mp3",
+      number: 35,
+    },
+    {
+      title: "One",
+      url: "%28036%29%20One.mp3",
+      number: 36,
+    },
+    {
+      title: "Are You Ready",
+      url: "%28037%29%20Are%20You%20Ready.mp3",
+      number: 37,
+    },
+    {
+      title: "Higher",
+      url: "%28038%29%20Higher.mp3",
+      number: 38,
+    },
+    {
+      title: "With Arms Wide Open",
+      url: "%28039%29%20With%20Arms%20Wide%20Open.mp3",
+      number: 39,
+    },
+    {
+      title: "What If",
+      url: "%28040%29%20What%20If.mp3",
+      number: 40,
+    },
+    {
+      title: "One Last Breath",
+      url: "%28041%29%20One%20Last%20Breath.mp3",
+      number: 41,
+    },
+    {
+      title: "Don't Stop Dancing",
+      url: "%28042%29%20Don%27t%20Stop%20Dancing.mp3",
+      number: 42,
+    },
+    {
+      title: "Bullets",
+      url: "%28043%29%20Bullets.mp3",
+      number: 43,
+    },
+    {
+      title: "My Sacrifice",
+      url: "%28044%29%20My%20Sacrifice.mp3",
+      number: 44,
+    },
+    {
+      title: "Weathered",
+      url: "%28045%29%20Weathered.mp3",
+      number: 45,
+    },
+    {
+      title: "Overcome",
+      url: "%28046%29%20Overcome.mp3",
+      number: 46,
+    },
+    {
+      title: "Bread Of Shame",
+      url: "%28047%29%20Bread%20Of%20Shame.mp3",
+      number: 47,
+    },
+    {
+      title: "A Thousand Faces",
+      url: "%28048%29%20A%20Thousand%20Faces.mp3",
+      number: 48,
+    },
+    {
+      title: "Suddenly",
+      url: "%28049%29%20Suddenly.mp3",
+      number: 49,
+    },
+    {
+      title: "Rain",
+      url: "%28050%29%20Rain.mp3",
+      number: 50,
+    },
+    {
+      title: "Away In Silence",
+      url: "%28051%29%20Away%20In%20Silence.mp3",
+      number: 51,
+    },
+    {
+      title: "Fear",
+      url: "%28052%29%20Fear.mp3",
+      number: 52,
+    },
+    {
+      title: "On My Sleeve",
+      url: "%28053%29%20On%20My%20Sleeve.mp3",
+      number: 53,
+    },
+    {
+      title: "Full Circle",
+      url: "%28054%29%20Full%20Circle.mp3",
+      number: 54,
+    },
+    {
+      title: "Time",
+      url: "%28055%29%20Time.mp3",
+      number: 55,
+    },
+    {
+      title: "Good Fight",
+      url: "%28056%29%20Good%20Fight.mp3",
+      number: 56,
+    },
+    {
+      title: "The Song You Sing",
+      url: "%28057%29%20The%20Song%20You%20Sing.mp3",
+      number: 57,
+    },
+    {
+      title: "My Own Prison (Radio Edit)",
+      url: "%28058%29%20My%20Own%20Prison%20%28Radio%20Edit%29.mp3",
+      number: 58,
+    },
+    {
+      title: "Torn (Radio Edit)",
+      url: "%28059%29%20Torn%20%28Radio%20Edit%29.mp3",
+      number: 59,
+    },
+    {
+      title: "What's This Life For (Album Edit - Clean)",
+      url: "%28060%29%20What%27s%20This%20Life%20For%20%28Album%20Edit%20-%20Clean%29.mp3",
+      number: 60,
+    },
+    {
+      title: "One (Radio Edit)",
+      url: "%28061%29%20One%20%28Radio%20Edit%29.mp3",
+      number: 61,
+    },
+    {
+      title: "What If (Radio Edit)",
+      url: "%28062%29%20What%20If%20%28Radio%20Edit%29.mp3",
+      number: 62,
+    },
+    {
+      title: "Higher (Top 40 Version)",
+      url: "%28063%29%20Higher%20%28Top%2040%20Version%29.mp3",
+      number: 63,
+    },
+    {
+      title: "With Arms Wide Open (New Version With Strings)",
+      url: "%28064%29%20With%20Arms%20Wide%20Open%20%28New%20Version%20With%20Strings%29.mp3",
+      number: 64,
+    },
+    {
+      title: "Are You Ready",
+      url: "%28065%29%20Are%20You%20Ready.mp3",
+      number: 65,
+    },
+    {
+      title: "My Sacrifice (Radio Edit)",
+      url: "%28066%29%20My%20Sacrifice%20%28Radio%20Edit%29.mp3",
+      number: 66,
+    },
+    {
+      title: "Bullets",
+      url: "%28067%29%20Bullets.mp3",
+      number: 67,
+    },
+    {
+      title: "One Last Breath (Radio Version)",
+      url: "%28068%29%20One%20Last%20Breath%20%28Radio%20Version%29.mp3",
+      number: 68,
+    },
+    {
+      title: "Don't Stop Dancing",
+      url: "%28069%29%20Don%27t%20Stop%20Dancing.mp3",
+      number: 69,
+    },
+    {
+      title: "Weathered (Edit)",
+      url: "%28070%29%20Weathered%20%28Edit%29.mp3",
+      number: 70,
+    },
+    {
+      title: "Overcome",
+      url: "%28071%29%20Overcome.mp3",
+      number: 71,
+    },
+    {
+      title: "Rain (Pop Mix)",
+      url: "%28072%29%20Rain%20%28Pop%20Mix%29.mp3",
+      number: 72,
+    },
+    {
+      title: "A Thousand Faces (Radio Edit)",
+      url: "%28073%29%20A%20Thousand%20Faces%20%28Radio%20Edit%29.mp3",
+      number: 73,
+    },
+    {
+      title: "To Whom It May Concern",
+      url: "%28074%29%20To%20Whom%20It%20May%20Concern.mp3",
+      number: 74,
+    },
+    {
+      title: "Is This The End (Scream 3 Edit)",
+      url: "%28075%29%20Is%20This%20The%20End%20%28Scream%203%20Edit%29.mp3",
+      number: 75,
+    },
+    {
+      title: "Bound &amp; Tied",
+      url: "%28076%29%20Bound%20%26%20Tied.mp3",
+      number: 76,
+    },
+    {
+      title: "Young Grow Old",
+      url: "%28077%29%20Young%20Grow%20Old.mp3",
+      number: 77,
+    },
+    {
+      title: "Silent Teacher",
+      url: "%28078%29%20Silent%20Teacher.mp3",
+      number: 78,
+    },
+    {
+      title: "I'm Eighteen (Alice Cooper Cover)",
+      url: "%28079%29%20I%27m%20Eighteen%20%28Alice%20Cooper%20Cover%29.mp3",
+      number: 79,
+    },
+    {
+      title: "Roadhouse Blues (Live At Woodstock 1999) (The Doors Cover)",
+      url: "%28080%29%20Roadhouse%20Blues%20%28Live%20At%20Woodstock%201999%29%20%28The%20Doors%20Cover%29.mp3",
+      number: 80,
+    },
+    {
+      title: "Riders On The Storm (The Doors Cover)",
+      url: "%28081%29%20Riders%20On%20The%20Storm%20%28The%20Doors%20Cover%29.mp3",
+      number: 81,
+    },
+    {
+      title: "Blistered (Demo)",
+      url: "%28082%29%20Blistered%20%28Demo%29.mp3",
+      number: 82,
+    },
+    {
+      title: "More Than This (Demo)",
+      url: "%28083%29%20More%20Than%20This%20%28Demo%29.mp3",
+      number: 83,
+    },
+    {
+      title: "Why (Demo)",
+      url: "%28084%29%20Why%20%28Demo%29.mp3",
+      number: 84,
+    },
+    {
+      title: "My Sacrifice (Live Acoustic)",
+      url: "%28085%29%20My%20Sacrifice%20%28Live%20Acoustic%29.mp3",
+      number: 85,
+    },
+    {
+      title: "My Own Prison (Acoustic Version - Extended)",
+      url: "%28086%29%20My%20Own%20Prison%20%28Acoustic%20Version%20-%20Extended%29.mp3",
+      number: 86,
+    },
+    {
+      title: "Don't Stop Dancing (Acoustic Version #3)",
+      url: "%28087%29%20Don%27t%20Stop%20Dancing%20%28Acoustic%20Version%20%233%29.mp3",
+      number: 87,
+    },
+    {
+      title: "With Arms Wide Open (Acoustic Version)",
+      url: "%28088%29%20With%20Arms%20Wide%20Open%20%28Acoustic%20Version%29.mp3",
+      number: 88,
+    },
+    {
+      title: "What's This Life For (Alternate Version - Clean)",
+      url: "%28089%29%20What%27s%20This%20Life%20For%20%28Alternate%20Version%20-%20Clean%29.mp3",
+      number: 89,
+    },
+    {
+      title: "Rain (Live Acoustic)",
+      url: "%28090%29%20Rain%20%28Live%20Acoustic%29.mp3",
+      number: 90,
+    },
+    {
+      title: "My Own Prison (Live Acoustic)",
+      url: "%28091%29%20My%20Own%20Prison%20%28Live%20Acoustic%29.mp3",
+      number: 91,
+    },
+    {
+      title: "With Arms Wide Open (Live Acoustic)",
+      url: "%28092%29%20With%20Arms%20Wide%20Open%20%28Live%20Acoustic%29.mp3",
+      number: 92,
+    },
+    {
+      title: "Overcome (Live Acoustic)",
+      url: "%28093%29%20Overcome%20%28Live%20Acoustic%29.mp3",
+      number: 93,
+    },
+    {
+      title: "One (Live Acoustic)",
+      url: "%28094%29%20One%20%28Live%20Acoustic%29.mp3",
+      number: 94,
+    },
+    {
+      title: "Torn (Live Acoustic)",
+      url: "%28095%29%20Torn%20%28Live%20Acoustic%29.mp3",
+      number: 95,
+    },
+    {
+      title: "Higher (Live Acoustic)",
+      url: "%28096%29%20Higher%20%28Live%20Acoustic%29.mp3",
+      number: 96,
+    },
+    {
+      title: "To Whom It May Concern (Live Acoustic)",
+      url: "%28097%29%20To%20Whom%20It%20May%20Concern%20%28Live%20Acoustic%29.mp3",
+      number: 97,
+    },
+  ],
+};
+
 const jukebox: {
   albums: Album[];
   audioBooks: Album[];
@@ -2443,8 +3010,8 @@ const jukebox: {
     bossBeats,
     smoothMcGroove2,
     smoothMcGroove3,
-  ],
-  audioBooks: [
+    EightOhEightsAndHeartbreak,
+    creedDiscography,
     hpPhilosophersStone,
     hpChamberOfSecrets,
     hpPrisonerOfAzkaban,
