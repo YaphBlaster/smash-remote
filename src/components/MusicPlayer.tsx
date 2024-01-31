@@ -231,10 +231,34 @@ const MusicPlayer = (props: Props) => {
   }, [audioSource, firstId, lastMode, visualizers]);
 
   const nextSong = () => {
+    const newTrackNumber =
+      currentTrack.number < currentAlbum.tracks.length
+        ? currentTrack.number + 1
+        : 1;
+    dispatch({
+      type: "SetCurrentTrack",
+      payload: {
+        newTrackNumber,
+      },
+    });
+
     api?.scrollTo(api.selectedScrollSnap() + 1);
   };
 
   const previousSong = () => {
+    if (api) console.log("yeah buddy");
+
+    const newTrackNumber =
+      currentTrack.number > 1
+        ? currentTrack.number - 1
+        : currentAlbum.tracks.length;
+
+    dispatch({
+      type: "SetCurrentTrack",
+      payload: {
+        newTrackNumber,
+      },
+    });
     api?.scrollTo(api.selectedScrollSnap() - 1);
   };
 
@@ -262,21 +286,6 @@ const MusicPlayer = (props: Props) => {
       }}
     />
   );
-
-  const seekAt = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
-    console.log("🚀 ~ seekAt ~ e:", e);
-    console.log("🚀 ~ seekAt ~ e.currentTarget:", e.currentTarget);
-    const mouseClickXPosition = e.pageX - e.currentTarget.offsetLeft;
-    console.log("🚀 ~ seekAt ~ mouseClickXPosition:", mouseClickXPosition);
-    console.log({ ...e.currentTarget });
-
-    const max = e.currentTarget.clientWidth;
-    console.log("🚀 ~ seekAt ~ max:", max);
-    const seekPercent = mouseClickXPosition / max;
-    const time = state.duration * seekPercent;
-
-    // controls.seek(time);
-  };
 
   const playToggle = () => {
     state.paused ? controls.play() : controls.pause();
@@ -332,7 +341,7 @@ const MusicPlayer = (props: Props) => {
             onClick={previousSong}
             variant="outline"
             size="icon"
-            disabled={!currentTrack.number || loading}
+            disabled={loading}
           >
             <SkipBack className="h-4 w-4" />
           </Button>
@@ -505,21 +514,18 @@ const MusicPlayer = (props: Props) => {
                         <Volume2 className="h-4 w-4" />
                       )}
                     </PopoverTrigger>
-                    <PopoverContent className="flex flex-col">
+                    <PopoverContent className="flex flex-col  w-36 ">
                       <Slider
                         defaultValue={[69 + 1]}
                         max={100}
                         step={1}
                         value={[state.volume * 100]}
-                        className=" cursor-pointer"
+                        className="cursor-pointer"
                         onValueChange={([value]) => {
                           controls.volume(value / 100);
                         }}
                         disabled={state.muted}
-                      >
-                        <SliderPrimitive.Thumb className="block h-5 w-5 rounded-full border-2 border-primary bg-background ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50" />
-                      </Slider>
-                      <span>{Math.floor(state.volume * 100)}</span>
+                      />
                     </PopoverContent>
                   </Popover>
                 </CardHeader>
