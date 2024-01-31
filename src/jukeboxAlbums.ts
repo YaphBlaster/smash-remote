@@ -2997,7 +2997,6 @@ const creedDiscography: Album = {
 
 const jukebox: {
   albums: Album[];
-  audioBooks: Album[];
 } = {
   albums: [
     homeAlone,

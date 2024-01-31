@@ -185,7 +185,7 @@ const MusicPlayer = (props: Props) => {
     loading,
     lastMode,
     visualizers,
-    current: { album, track },
+    current: { album: currentAlbum, track: currentTrack },
   } = musicPlayerState;
   const audioSource = document.getElementById("audio") as HTMLAudioElement;
   const albumByArtist = useRef({
@@ -241,7 +241,7 @@ const MusicPlayer = (props: Props) => {
   const [audio, state, controls] = useAudio(
     <audio
       id="audio"
-      src={`${album.baseURI}${track.url}`}
+      src={`${currentAlbum.baseURI}${currentTrack.url}`}
       preload="true"
       crossOrigin="anonymous"
       onCanPlayThrough={() => {
@@ -324,7 +324,7 @@ const MusicPlayer = (props: Props) => {
       <Card className="w-full max-w-s overflow-hidden gap-2 flex items-center compact border-none">
         <CardHeader className="p-0">
           <CardDescription className="w-16 md:w-44">
-            <Marquee>{track.title}/</Marquee>
+            <Marquee>{currentTrack.title}/</Marquee>
           </CardDescription>
         </CardHeader>
         <CardContent className="flex min-w-min flex-row p-0 gap-2 self-center ">
@@ -332,7 +332,7 @@ const MusicPlayer = (props: Props) => {
             onClick={previousSong}
             variant="outline"
             size="icon"
-            disabled={!track.number || loading}
+            disabled={!currentTrack.number || loading}
           >
             <SkipBack className="h-4 w-4" />
           </Button>
@@ -414,11 +414,11 @@ const MusicPlayer = (props: Props) => {
             <DrawerContent className="flex items-center">
               <DrawerHeader className="gap-4">
                 <DrawerTitle className="text-center">
-                  {album.artist}
+                  {currentAlbum.artist}
                 </DrawerTitle>
                 <DrawerDescription>
                   <Select
-                    defaultValue={`${album.baseURI},${album.artist}`}
+                    defaultValue={`${currentAlbum.baseURI},${currentAlbum.artist}`}
                     onValueChange={(value) => {
                       const [baseURI, ...artists] = value.split(",");
 
@@ -470,8 +470,8 @@ const MusicPlayer = (props: Props) => {
               <Card className="w-[400px] h-[500px] bg-card/[.2] backdrop-blur-sm ">
                 <CardHeader className="flex-row gap-4">
                   <Select
-                    value={(api && api.selectedScrollSnap() + 1)?.toString()}
-                    defaultValue={defaultTrack.number.toString()}
+                    value={currentTrack.number.toString()}
+                    defaultValue={currentTrack.number.toString()}
                     onValueChange={(value) => {
                       api?.scrollTo(Number(value) - 1);
                     }}
@@ -480,7 +480,7 @@ const MusicPlayer = (props: Props) => {
                       <SelectValue placeholder="Track List" />
                     </SelectTrigger>
                     <SelectContent>
-                      {album.tracks.map((track) => (
+                      {currentAlbum.tracks.map((track) => (
                         <SelectItem
                           key={track.url}
                           onClick={() => console.log("test")}
@@ -526,11 +526,14 @@ const MusicPlayer = (props: Props) => {
                 <CardContent className="flex items-center flex-col gap-2">
                   <Carousel
                     setApi={setApi}
-                    opts={{ loop: true }}
+                    opts={{
+                      loop: true,
+                      startIndex: currentTrack.number - 1,
+                    }}
                     className="w-full max-w-xs "
                   >
                     <CarouselContent>
-                      {album.tracks.map((track) => (
+                      {currentAlbum.tracks.map((track) => (
                         <CarouselItem key={track.url}>
                           <Card className="h-full bg-transparent">
                             <CardHeader className="pb-0" />
@@ -539,7 +542,7 @@ const MusicPlayer = (props: Props) => {
                               <Image
                                 width={200}
                                 height={200}
-                                src={album.imageURI}
+                                src={currentAlbum.imageURI}
                                 alt="album-image"
                                 className="m-auto rounded-sm aspect-square"
                                 quality={50}
@@ -576,7 +579,7 @@ const MusicPlayer = (props: Props) => {
                       onClick={previousSong}
                       variant="outline"
                       size="icon"
-                      disabled={!track.number || loading}
+                      disabled={!currentTrack.number || loading}
                     >
                       <SkipBack className="h-4 w-4" />
                     </Button>
