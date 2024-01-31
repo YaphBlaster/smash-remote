@@ -177,6 +177,7 @@ const musicPlayerInitialState: MusicPlayerState = {
 };
 
 const MusicPlayer = (props: Props) => {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [musicPlayerState, dispatch] = useReducer(
     reducer,
     musicPlayerInitialState
@@ -235,30 +236,34 @@ const MusicPlayer = (props: Props) => {
       currentTrack.number < currentAlbum.tracks.length
         ? currentTrack.number + 1
         : 1;
-    dispatch({
-      type: "SetCurrentTrack",
-      payload: {
-        newTrackNumber,
-      },
-    });
+
+    if (!isDrawerOpen) {
+      dispatch({
+        type: "SetCurrentTrack",
+        payload: {
+          newTrackNumber,
+        },
+      });
+    }
 
     api?.scrollTo(api.selectedScrollSnap() + 1);
   };
 
   const previousSong = () => {
-    if (api) console.log("yeah buddy");
-
     const newTrackNumber =
       currentTrack.number > 1
         ? currentTrack.number - 1
         : currentAlbum.tracks.length;
 
-    dispatch({
-      type: "SetCurrentTrack",
-      payload: {
-        newTrackNumber,
-      },
-    });
+    if (!isDrawerOpen) {
+      dispatch({
+        type: "SetCurrentTrack",
+        payload: {
+          newTrackNumber,
+        },
+      });
+    }
+
     api?.scrollTo(api.selectedScrollSnap() - 1);
   };
 
@@ -367,9 +372,10 @@ const MusicPlayer = (props: Props) => {
             <SkipForward className="h-4 w-4" />
           </Button>
           <Drawer
+            open={isDrawerOpen}
             dismissible={false}
             onOpenChange={(open) => {
-              if (open) {
+              if (isDrawerOpen) {
                 setTimeout(() => {
                   if (visualizers[firstId]) {
                     const id = `container-${1}`;
@@ -412,7 +418,12 @@ const MusicPlayer = (props: Props) => {
             }}
           >
             <DrawerTrigger>
-              <Button variant="ghost" asChild size="icon">
+              <Button
+                onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+                variant="ghost"
+                asChild
+                size="icon"
+              >
                 <Disc3
                   className={`${
                     state.playing && "animate-spin"
@@ -482,6 +493,12 @@ const MusicPlayer = (props: Props) => {
                     value={currentTrack.number.toString()}
                     defaultValue={currentTrack.number.toString()}
                     onValueChange={(value) => {
+                      dispatch({
+                        type: "SetCurrentTrack",
+                        payload: {
+                          newTrackNumber: Number(value),
+                        },
+                      });
                       api?.scrollTo(Number(value) - 1);
                     }}
                   >
@@ -492,12 +509,12 @@ const MusicPlayer = (props: Props) => {
                       {currentAlbum.tracks.map((track) => (
                         <SelectItem
                           key={track.url}
-                          onClick={() => console.log("test")}
                           value={track.number.toString()}
                         >
                           <div className="text-ellipsis overflow-hidden whitespace-nowrap max-w-xs">
                             {track.title}
                           </div>
+                          <Separator />
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -628,7 +645,12 @@ const MusicPlayer = (props: Props) => {
               </Button>
               <DrawerFooter>
                 <DrawerClose>
-                  <Button variant="outline">Close</Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsDrawerOpen(false)}
+                  >
+                    Close
+                  </Button>
                 </DrawerClose>
               </DrawerFooter>
             </DrawerContent>
