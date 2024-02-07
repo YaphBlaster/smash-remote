@@ -3,6 +3,7 @@ export enum ROUTE_PATHS {
   ARCADIA = "/arcadia",
   DASHBOARD = `${ROUTE_PATHS.ARCADIA}/dashboard`,
   PRICE_IS_RIGHT = `${ROUTE_PATHS.ARCADIA}/price-is-right`,
+  CARDS = `${ROUTE_PATHS.ARCADIA}/cards`,
 }
 
 export enum VISUALIZER_MODES {
