@@ -4,41 +4,24 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { _DataTableAction, _FetchActionsType } from "@/components/ObsContainer";
 import CooldownBarProvider from "@/components/cooldownbar-context";
 import ActionButtonGroup from "@/components/ActionButtonGroup";
 import { useQuery } from "@tanstack/react-query";
 import { useStreamerBotContext } from "@/components/streamerbot-context";
 import { useEffect, useRef, useState } from "react";
+import { StreamerbotAction } from "@streamerbot/client";
 
-const dataTableActionCategories = [
-  "Ace Ventura",
-  "Cartoons",
-  "Community",
-  "Eric Andre Show",
-  "Hamilton",
-  "Kylo Ren",
-  "Memes",
-  "PKMN",
-  "Spiderman",
-  "Spongebob",
-  "Trump",
-  "WWE",
-];
+const blackList = ["Utils", "Replay"];
 
 export const useColumns = () => {
-  const columns: ColumnDef<_DataTableAction>[] = [
+  const columns: ColumnDef<StreamerbotAction>[] = [
     {
       accessorKey: "name",
       header: "Clip",
       cell: ({ row }) => {
         const action = row.original;
 
-        return (
-          <div className="md:text-left text-center">
-            {action.tableInfo.name}
-          </div>
-        );
+        return <div className="md:text-left text-center">{action.name}</div>;
       },
     },
     {
@@ -63,26 +46,7 @@ export const useColumns = () => {
         return <div className="md:text-left text-center">{action.group}</div>;
       },
     },
-    {
-      id: "tags",
-      header: ({ column }) => {
-        return <div className="text-left ml-3">Tags</div>;
-      },
 
-      cell: ({ row }) => {
-        const action = row.original;
-
-        return (
-          <div className="md:text-left text-center">
-            {action.tableInfo.tags.map((tag) => (
-              <div className="md:text-left text-center" key={tag}>
-                {tag}
-              </div>
-            ))}
-          </div>
-        );
-      },
-    },
     {
       id: "actions",
       header: ({ column }) => {
@@ -109,29 +73,16 @@ export const useFetchActions = () => {
   const fetchActions = async () => {
     const { actions } = await client.getActions();
 
-    const actionGroupsSet = new Set<string>();
-    const idToDataTableActions: Record<string, _DataTableAction> = {};
+    const groupingCallback = ({ group }: StreamerbotAction) => {
+      return blackList.includes(group) ? "utilities" : group;
+    };
 
-    actions.forEach((action) => {
-      const [name, tagsInText] = action.name.split("-");
-      const tags = tagsInText ? tagsInText.slice(1, -1).split(",") : [];
-      if (dataTableActionCategories.includes(action.group)) {
-        actionGroupsSet.add(action.group);
-      }
-
-      idToDataTableActions[action.id] = {
-        ...action,
-        tableInfo: {
-          name,
-          tags,
-        },
-      };
-    });
+    const result = Object.groupBy(actions, groupingCallback);
 
     return {
       actionsRaw: actions,
-      actionTableData: idToDataTableActions,
-      actionTableGroups: Array.from(actionGroupsSet),
+      groupedActions: result,
+      actionTableGroups: Object.values(result),
     };
   };
 

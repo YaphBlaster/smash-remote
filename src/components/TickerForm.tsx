@@ -21,7 +21,7 @@ import {
   _StreamerbotContextType,
   useStreamerBotContext,
 } from "./streamerbot-context";
-import { _FetchActionsType } from "./ObsContainer";
+import { useFetchActions } from "@/lib/hooks";
 
 const formSchema = z.object({
   tickerText: z.string().trim().max(69),
@@ -31,10 +31,7 @@ type Props = {};
 const TickerForm = (props: Props) => {
   const queryClient = useQueryClient();
   const { streamerbotClient: client } = useStreamerBotContext();
-  const { actionsRaw } = queryClient.getQueryData([
-    "actions",
-  ]) as _FetchActionsType;
-
+  const { data } = useFetchActions();
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,7 +42,7 @@ const TickerForm = (props: Props) => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const tickerActionId = actionsRaw.find(
+    const tickerActionId = data?.actionsRaw.find(
       (action) => action.name === "Show Ticker"
     )?.id;
 

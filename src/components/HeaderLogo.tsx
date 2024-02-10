@@ -16,7 +16,7 @@ import { useMedia } from "react-use";
 type Props = {};
 
 const HeaderLogo = (props: Props) => {
-  const isDesktop = useMedia("(min-width: 768px)");
+  const isDesktop = useMedia("(min-width: 768px)", false);
 
   if (isDesktop) {
     return (

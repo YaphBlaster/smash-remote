@@ -86,7 +86,7 @@ const PriceIsRight = (props: Props) => {
           >
             <CarouselContent className="items-center h-full max-h-[800px]">
               {data &&
-                Object.values(data.actionTableData).map((item) => (
+                Object.values(data.groupedActions).map((item) => (
                   <CarouselItem key={item.id} className="basis-1/5">
                     <Card className="w-[200px]">
                       <CardContent className="flex aspect-square items-center justify-center p-6">

@@ -25,8 +25,7 @@ type Track = {
 };
 
 type VideoProps = React.ComponentPropsWithoutRef<"video">;
-export interface HoverVideoPlayerProps
-  extends React.ComponentPropsWithoutRef<"div"> {
+type HoverVideoPlayerProps = React.ComponentPropsWithoutRef<"div"> & {
   /**
    * Source(s) to load from and play in the video player.
    */
@@ -258,4 +257,4 @@ export interface HoverVideoPlayerProps
    * @defaultValue "video"
    */
   sizingMode?: "video" | "overlay" | "container" | "manual";
-}
+};

@@ -47,10 +47,8 @@ import {
   DrawerTrigger,
 } from "./ui/drawer";
 import Marquee from "react-fast-marquee";
-import { ScrollArea } from "./ui/scroll-area";
 import { Separator } from "./ui/separator";
 import { VISUALIZER_MODES } from "@/enums";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import {
   Carousel,
   CarouselApi,
@@ -59,8 +57,6 @@ import {
 } from "./ui/carousel";
 import Image from "next/image";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { SliderThumb, Thumb } from "@radix-ui/react-slider";
-import * as SliderPrimitive from "@radix-ui/react-slider";
 
 type Props = {};
 
