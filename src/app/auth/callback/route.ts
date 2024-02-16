@@ -7,6 +7,7 @@ import type { Database } from "@/lib/database.types";
 import prisma from "@/db";
 
 export async function GET(request: NextRequest) {
+  console.log("hello");
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
 

@@ -55,12 +55,14 @@ const ProfileAvatar = ({ user }: Props) => {
         <Avatar>
           <AvatarImage src="" />
           <AvatarFallback>
-            {user.user_metadata?.displayName[0].toUpperCase()}
+            {user.user_metadata?.display_name[0].toUpperCase()}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>{user.user_metadata?.displayName}</DropdownMenuLabel>
+        <DropdownMenuLabel>
+          {user.user_metadata?.display_name}
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>

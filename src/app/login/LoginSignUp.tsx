@@ -59,7 +59,11 @@ export default function LoginSignUp() {
   const queryClient = useQueryClient();
 
   const onSignUpSubmit = useMutation({
-    mutationFn: async ({ email, displayName, password }: SignUpFormInput) => {
+    mutationFn: async ({
+      email,
+      displayName: display_name,
+      password,
+    }: SignUpFormInput) => {
       const emailRedirectTo = `${location.origin}/auth/callback`;
 
       await supabase.auth.signUp({
@@ -67,7 +71,7 @@ export default function LoginSignUp() {
         password,
         options: {
           data: {
-            displayName,
+            display_name,
           },
           emailRedirectTo,
         },

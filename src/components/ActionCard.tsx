@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "./ui/card";
 import HoverVideoPlayer from "react-hover-video-player";
+import VideoThumbnail from "react-video-thumbnail";
 import { AspectRatio } from "./ui/aspect-ratio";
 import { StreamerbotAction } from "@streamerbot/client";
 import { Button } from "./ui/button";
@@ -16,7 +17,6 @@ import { Play, Volume2, VolumeX } from "lucide-react";
 import { useStreamerBotContext } from "./streamerbot-context";
 import { useActionCardsContext } from "./actioncards-context";
 import Image from "next/image";
-import VideoThumbnail from "react-video-thumbnail";
 
 const HoverPlayerWithProps = (hoverPlayerProps: HoverVideoPlayerProps) => {
   return <HoverVideoPlayer {...hoverPlayerProps} />;
