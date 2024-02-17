@@ -1,7 +1,3 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
-
 import type { NextRequest } from "next/server";
 import prisma from "@/db";
 import { Prisma } from "@prisma/client";
@@ -14,6 +10,8 @@ export async function GET(
   const args: Prisma.ProfileFindUniqueOrThrowArgs = {
     where: { id },
   };
+
+  console.log("hit");
   const profile = await prisma.profile.findUnique(args);
 
   return Response.json({ profile });

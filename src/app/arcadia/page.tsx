@@ -1,13 +1,14 @@
-"use client";
+import ObsContainer from "@/components/ObsContainer";
 import { createServerSupabaseClient } from "@/lib/serverHooks";
-import { ROUTE_PATHS } from "@/enums";
-import { redirect } from "next/navigation";
 import React from "react";
 
 type Props = {};
 
-const Arcadia = (props: Props) => {
-  redirect(ROUTE_PATHS.DASHBOARD);
+const Arcadia = async (props: Props) => {
+  const supabase = createServerSupabaseClient();
+  await supabase.auth.getSession();
+
+  return <ObsContainer />;
 };
 
 export default Arcadia;

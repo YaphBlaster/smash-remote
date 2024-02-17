@@ -89,27 +89,17 @@ export const useFetchActions = () => {
   return useQuery({
     queryKey: ["actions"],
     queryFn: fetchActions,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
   });
 };
 
-export const useThrottleCustom = (value: any, limit: number) => {
-  const [throttledValue, setThrottledValue] = useState(value);
-  const lastRan = useRef(Date.now());
+export const useFetchProfile = ({ id }: { id: string }) => {
+  const fetchProfile = async () => {
+    const response = await fetch(`/api/profile/${id}`);
+    return await response.json();
+  };
 
-  useEffect(() => {
-    const handler = setTimeout(function () {
-      if (Date.now() - lastRan.current >= limit) {
-        setThrottledValue(value);
-        lastRan.current = Date.now();
-      }
-    }, limit - (Date.now() - lastRan.current));
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, limit]);
-
-  return throttledValue;
+  return useQuery({
+    queryKey: ["profile"],
+    queryFn: fetchProfile,
+  });
 };

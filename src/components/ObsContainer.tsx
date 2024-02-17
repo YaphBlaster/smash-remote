@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useStreamerBotContext } from "./streamerbot-context";
-import { useFetchActions } from "../lib/hooks";
+import { useFetchActions, useFetchProfile } from "../lib/hooks";
 import GiphySearch from "./GiphySearch";
 
 import TickerForm from "./TickerForm";
@@ -17,6 +17,7 @@ import { DevTool } from "@hookform/devtools";
 import { z } from "zod";
 import { StreamerbotAction } from "@streamerbot/client";
 import { ScrollArea } from "./ui/scroll-area";
+import { getCookie } from "cookies-next";
 
 const formSchema = z.object({
   groups: z.array(z.string()),
@@ -25,6 +26,10 @@ const formSchema = z.object({
 type Props = {};
 
 const ObsContainer = (props: Props) => {
+  const userId = getCookie("userId");
+
+  const profileData = useFetchProfile({ id: userId! });
+
   const [selectedActionGroups, setSelectedActionGroups] = useState<
     Partial<Record<string, StreamerbotAction[]>>
   >({});

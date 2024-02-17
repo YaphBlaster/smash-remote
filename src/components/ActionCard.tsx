@@ -13,7 +13,7 @@ import VideoThumbnail from "react-video-thumbnail";
 import { AspectRatio } from "./ui/aspect-ratio";
 import { StreamerbotAction } from "@streamerbot/client";
 import { Button } from "./ui/button";
-import { Play, Volume2, VolumeX } from "lucide-react";
+import { Heart, Play, Volume2, VolumeX } from "lucide-react";
 import { useStreamerBotContext } from "./streamerbot-context";
 import { useActionCardsContext } from "./actioncards-context";
 import Image from "next/image";
@@ -44,9 +44,14 @@ const ActionCard = ({ action }: Props) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-ellipsis overflow-hidden whitespace-nowrap leading-5">
-          {action.name}
-        </CardTitle>
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-ellipsis overflow-hidden whitespace-nowrap leading-5">
+            {action.name}
+          </CardTitle>
+          <Button variant="ghost" size="icon">
+            <Heart className="h-4 w-4" />
+          </Button>
+        </div>
         <CardDescription>{action.group}</CardDescription>
       </CardHeader>
       <CardContent>

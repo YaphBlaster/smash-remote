@@ -36,12 +36,13 @@ import {
   LogOut,
   User as UserIcon,
 } from "lucide-react";
+import { Profile } from "@prisma/client";
 
 type Props = {
-  user: User;
+  profile: Profile;
 };
 
-const ProfileAvatar = ({ user }: Props) => {
+const ProfileAvatar = ({ profile }: Props) => {
   const supabase = createClientComponentClient();
   const router = useRouter();
 
@@ -55,14 +56,12 @@ const ProfileAvatar = ({ user }: Props) => {
         <Avatar>
           <AvatarImage src="" />
           <AvatarFallback>
-            {user.user_metadata?.display_name[0].toUpperCase()}
+            {profile.display_name[0].toUpperCase()}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>
-          {user.user_metadata?.display_name}
-        </DropdownMenuLabel>
+        <DropdownMenuLabel>{profile?.display_name}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>

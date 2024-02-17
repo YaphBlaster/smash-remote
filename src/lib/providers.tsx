@@ -5,7 +5,15 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import StreamerbotProvider from "../components/streamerbot-context";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { type ThemeProviderProps } from "next-themes/dist/types";
-const queryClient = new QueryClient();
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 type Props = {};
 

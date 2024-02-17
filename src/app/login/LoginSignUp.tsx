@@ -30,6 +30,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Drama, HeartHandshake, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { ROUTE_PATHS } from "@/enums";
+import { setCookie } from "cookies-next";
 
 const loginFormSchema = z.object({
   email: z.string().email(),
@@ -56,7 +57,6 @@ export default function LoginSignUp() {
     defaultValues: { displayName: "", email: "", password: "" },
     resolver: zodResolver(signUpFormSchema),
   });
-  const queryClient = useQueryClient();
 
   const onSignUpSubmit = useMutation({
     mutationFn: async ({
@@ -64,7 +64,7 @@ export default function LoginSignUp() {
       displayName: display_name,
       password,
     }: SignUpFormInput) => {
-      const emailRedirectTo = `${location.origin}/auth/callback`;
+      const emailRedirectTo = `${location.origin}/api/auth/callback`;
 
       await supabase.auth.signUp({
         email,
@@ -90,7 +90,7 @@ export default function LoginSignUp() {
       });
     },
     onSuccess: ({ data: { user } }) => {
-      queryClient.setQueryData(["user"], user);
+      setCookie("userId", user?.id);
       router.refresh();
     },
   });
