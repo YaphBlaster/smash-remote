@@ -17,7 +17,6 @@ import { DevTool } from "@hookform/devtools";
 import { z } from "zod";
 import { StreamerbotAction } from "@streamerbot/client";
 import { ScrollArea } from "./ui/scroll-area";
-import { getCookie } from "cookies-next";
 
 const formSchema = z.object({
   groups: z.array(z.string()),
@@ -26,9 +25,7 @@ const formSchema = z.object({
 type Props = {};
 
 const ObsContainer = (props: Props) => {
-  const userId = getCookie("userId");
-
-  const profileData = useFetchProfile({ id: userId! });
+  const { data: profileData } = useFetchProfile();
 
   const [selectedActionGroups, setSelectedActionGroups] = useState<
     Partial<Record<string, StreamerbotAction[]>>
@@ -44,16 +41,17 @@ const ObsContainer = (props: Props) => {
 
   const { streamerbotClient: client } = useStreamerBotContext();
 
-  const { data, isFetching } = useFetchActions();
+  const { data: fetchActionData, isFetching } = useFetchActions();
 
-  const groups: OptionType[] | undefined = data && [
+  const groups: OptionType[] | undefined = fetchActionData && [
     { label: "All", value: "All" },
-    ...Object.keys(data.groupedActions).map((groupName) => {
+    { label: "Favourites", value: "Favourites" },
+    ...Object.keys(fetchActionData.groupedActions).map((groupName) => {
       return { label: groupName, value: groupName };
     }),
   ];
 
-  const replayAction = data?.actionsRaw.find(
+  const replayAction = fetchActionData?.actionsRaw.find(
     (action) => action.group === "Replay"
   );
 
@@ -66,18 +64,29 @@ const ObsContainer = (props: Props) => {
   useEffect(() => {
     let temp: Partial<Record<string, StreamerbotAction[]>> = {};
     if (groupsFromForm.includes("All")) {
-      temp = { ...data?.groupedActions };
+      temp = { ...fetchActionData?.groupedActions };
     } else {
       groupsFromForm.forEach((groupName) => {
-        temp[groupName] = data?.groupedActions[groupName];
+        temp[groupName] = fetchActionData?.groupedActions[groupName];
       });
     }
+
+    if (
+      groupsFromForm.includes("Favourites") &&
+      profileData &&
+      fetchActionData
+    ) {
+      temp["Favourites"] = profileData.favourites.map(
+        (actionId) => fetchActionData.groupedActionsById[actionId]![0]
+      );
+    }
+
     setSelectedActionGroups(temp);
 
     return () => {};
-  }, [data?.groupedActions, groupsFromForm]);
+  }, [fetchActionData, groupsFromForm, profileData]);
 
-  return isFetching && data ? (
+  return isFetching && fetchActionData ? (
     <Loading />
   ) : (
     <div className="flex flex-col gap-y-6">
@@ -89,7 +98,7 @@ const ObsContainer = (props: Props) => {
       ) : null}
       <TickerForm />
       <GiphySearch />
-      {data && groups && (
+      {fetchActionData && groups && (
         <Form {...form}>
           <FormField
             control={form.control}
@@ -115,10 +124,14 @@ const ObsContainer = (props: Props) => {
       <ActionCardsProvider>
         <ScrollArea className="h-[500px] md:h-[600px] lg:h-[800px] w-full rounded-md border p-4">
           <div className="grid grid-cols-2 sm md:grid-cols-3 lg:grid-cols-4 gap-5 ">
-            {data &&
+            {fetchActionData &&
               Object.values(selectedActionGroups).map((actions) => {
                 return actions?.map((action) => (
-                  <ActionCard action={action} key={action.id} />
+                  <ActionCard
+                    isFavourited={profileData?.favourites.includes(action.id)}
+                    action={action}
+                    key={action.id}
+                  />
                 ));
               })}
           </div>

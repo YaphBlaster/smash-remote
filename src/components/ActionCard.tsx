@@ -13,26 +13,33 @@ import VideoThumbnail from "react-video-thumbnail";
 import { AspectRatio } from "./ui/aspect-ratio";
 import { StreamerbotAction } from "@streamerbot/client";
 import { Button } from "./ui/button";
-import { Heart, Play, Volume2, VolumeX } from "lucide-react";
+import { Heart, Loader2, Play, Volume2, VolumeX } from "lucide-react";
 import { useStreamerBotContext } from "./streamerbot-context";
 import { useActionCardsContext } from "./actioncards-context";
 import Image from "next/image";
+import { useAddFavourite, useDeleteFavourite } from "@/lib/hooks";
 
 const HoverPlayerWithProps = (hoverPlayerProps: HoverVideoPlayerProps) => {
   return <HoverVideoPlayer {...hoverPlayerProps} />;
 };
 
 type Props = {
+  isFavourited?: boolean;
   action: StreamerbotAction;
 };
 
-const ActionCard = ({ action }: Props) => {
+const ActionCard = ({ action, isFavourited }: Props) => {
   const { streamerbotClient: client } = useStreamerBotContext();
   const { isMuted, setIsMuted } = useActionCardsContext();
   const [thumbnailData, setThumbnailData] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
   const videoURL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/media/videos/${action.id}.webm`;
-
+  const { mutate: addFav, isPending: addFavPending } = useAddFavourite({
+    actionId: action.id,
+  });
+  const { mutate: deleteFav, isPending: deleteFavPending } = useDeleteFavourite(
+    { actionId: action.id }
+  );
   const doAction = async () => {
     await client.doAction(action.id);
   };
@@ -41,6 +48,12 @@ const ActionCard = ({ action }: Props) => {
     setIsMuted(!isMuted);
   };
 
+  const toggleFavourite = () => {
+    isFavourited ? deleteFav() : addFav();
+  };
+
+  const isLoading = addFavPending || deleteFavPending;
+
   return (
     <Card>
       <CardHeader>
@@ -48,8 +61,21 @@ const ActionCard = ({ action }: Props) => {
           <CardTitle className="text-ellipsis overflow-hidden whitespace-nowrap leading-5">
             {action.name}
           </CardTitle>
-          <Button variant="ghost" size="icon">
-            <Heart className="h-4 w-4" />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleFavourite}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Heart
+                className={`h-4 w-4  ${
+                  isFavourited && "fill-pink-600 stroke-pink-400"
+                }}`}
+              />
+            )}
           </Button>
         </div>
         <CardDescription>{action.group}</CardDescription>
