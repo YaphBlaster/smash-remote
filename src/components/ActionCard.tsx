@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -17,7 +17,9 @@ import { Heart, Loader2, Play, Volume2, VolumeX } from "lucide-react";
 import { useStreamerBotContext } from "./streamerbot-context";
 import { useActionCardsContext } from "./actioncards-context";
 import Image from "next/image";
-import { useAddFavourite, useDeleteFavourite } from "@/lib/hooks";
+import { useAddFavourite, useDeleteFavourite, useGetVideo } from "@/lib/hooks";
+import { useQueryClient } from "@tanstack/react-query";
+import { Profile } from "@prisma/client";
 
 const HoverPlayerWithProps = (hoverPlayerProps: HoverVideoPlayerProps) => {
   return <HoverVideoPlayer {...hoverPlayerProps} />;
@@ -29,11 +31,15 @@ type Props = {
 };
 
 const ActionCard = ({ action, isFavourited }: Props) => {
+  const queryClient = useQueryClient();
+  const profile = queryClient.getQueryData<Profile>(["profile"]);
   const { streamerbotClient: client } = useStreamerBotContext();
   const { isMuted, setIsMuted } = useActionCardsContext();
   const [thumbnailData, setThumbnailData] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
-  const videoURL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/media/videos/${action.id}.webm`;
+
+  const { data: url, isFetching } = useGetVideo({ actionId: action.id });
+
   const { mutate: addFav, isPending: addFavPending } = useAddFavourite({
     actionId: action.id,
   });
@@ -41,7 +47,10 @@ const ActionCard = ({ action, isFavourited }: Props) => {
     { actionId: action.id }
   );
   const doAction = async () => {
-    await client.doAction(action.id);
+    await client.doAction(action.id, {
+      author: profile?.display_name,
+      delay: secondsToMillis(videoRef.current?.duration) || 5000,
+    });
   };
 
   const toggleMute = () => {
@@ -52,7 +61,15 @@ const ActionCard = ({ action, isFavourited }: Props) => {
     isFavourited ? deleteFav() : addFav();
   };
 
-  const isLoading = addFavPending || deleteFavPending;
+  const secondsToMillis = (minute?: number) => (minute ? minute * 1000 : 0);
+
+  const isPending = addFavPending || deleteFavPending;
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  if (isFetching) {
+    return <div>Loading</div>;
+  }
 
   return (
     <Card>
@@ -65,9 +82,9 @@ const ActionCard = ({ action, isFavourited }: Props) => {
             variant="ghost"
             size="icon"
             onClick={toggleFavourite}
-            disabled={isLoading}
+            disabled={isPending}
           >
-            {isLoading ? (
+            {isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Heart
@@ -81,65 +98,67 @@ const ActionCard = ({ action, isFavourited }: Props) => {
         <CardDescription>{action.group}</CardDescription>
       </CardHeader>
       <CardContent>
-        <AspectRatio ratio={16 / 9} className="overflow-hidden rounded">
-          {isPlaying ? (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleMute}
-              className="absolute z-10 right-1 top-1 opacity-75 rounded-full"
+        <AspectRatio ratio={16 / 9} className="overflow-hidden rounded ">
+          <div className="w-full h-full">
+            {isPlaying ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleMute}
+                className="absolute z-10 right-1 top-1 opacity-75 rounded-full "
+                onMouseEnter={() => {
+                  setIsPlaying(true);
+                }}
+                onMouseLeave={() => {
+                  setIsPlaying(false);
+                }}
+              >
+                {isMuted ? (
+                  <VolumeX className="h-4 w-4" />
+                ) : (
+                  <Volume2 className="h-4 w-4" />
+                )}
+              </Button>
+            ) : null}
+
+            <HoverPlayerWithProps
+              videoSrc={url}
+              focused={isPlaying}
+              className="rounded w-full"
+              videoRef={videoRef}
+              muted={isMuted}
               onMouseEnter={() => {
                 setIsPlaying(true);
               }}
               onMouseLeave={() => {
                 setIsPlaying(false);
               }}
-            >
-              {isMuted ? (
-                <VolumeX className="h-4 w-4" />
-              ) : (
-                <Volume2 className="h-4 w-4" />
-              )}
-            </Button>
-          ) : null}
-
-          <HoverPlayerWithProps
-            videoSrc={videoURL}
-            focused={isPlaying}
-            className="rounded"
-            muted={isMuted}
-            onMouseEnter={() => {
-              setIsPlaying(true);
-            }}
-            onMouseLeave={() => {
-              setIsPlaying(false);
-            }}
-            disableDefaultEventHandling
-            unloadVideoOnPaused
-            restartOnPaused
-            pausedOverlay={
-              <div>
-                <VideoThumbnail
-                  videoUrl={videoURL}
-                  alt={action.name}
-                  thumbnailHandler={(thumbnail: string) =>
-                    setThumbnailData(thumbnail)
-                  }
-                  renderThumbnail={false}
-                />
-                {thumbnailData ? (
-                  <Image
+              disableDefaultEventHandling
+              preload="metadata"
+              restartOnPaused
+              pausedOverlay={
+                <div>
+                  <VideoThumbnail
+                    videoUrl={url}
                     alt={action.name}
-                    src={thumbnailData}
-                    width={10}
-                    height={10}
-                    className="rounded w-full h-full"
-                    quality={50}
+                    thumbnailHandler={(thumbnail: string) =>
+                      setThumbnailData(thumbnail)
+                    }
+                    renderThumbnail={false}
                   />
-                ) : null}
-              </div>
-            }
-          />
+                  {thumbnailData ? (
+                    <Image
+                      alt={action.name}
+                      src={thumbnailData}
+                      fill
+                      className="rounded w-full h-full"
+                      quality={50}
+                    />
+                  ) : null}
+                </div>
+              }
+            />
+          </div>
         </AspectRatio>
       </CardContent>
       <CardFooter className="flex justify-around">

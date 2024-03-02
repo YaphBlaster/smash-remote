@@ -3,18 +3,18 @@ import { createServerSupabaseClient } from "@/lib/serverHooks";
 import ProfileAvatar from "./ProfileAvatar";
 import HeaderLogo from "./HeaderLogo";
 import MusicPlayer from "./MusicPlayer";
-import { cookies } from "next/headers";
 import prisma from "@/db";
 
 type Props = {};
 
 const Header = async (props: Props) => {
   const supabase = createServerSupabaseClient();
-  const cookieJar = cookies();
-  const userId = cookieJar.get("userId");
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const profile = await prisma.profile.findFirst({
-    where: { id: userId?.value },
+    where: { id: user?.id },
   });
 
   await supabase.auth.getSession();

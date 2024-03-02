@@ -16,7 +16,6 @@ export async function GET(request: NextRequest) {
     });
 
     const user = await supabase.auth.exchangeCodeForSession(code);
-    console.log("🚀 ~ GET ~ user:", user);
   }
 
   // URL to redirect to after sign in process completes

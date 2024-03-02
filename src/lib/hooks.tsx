@@ -13,6 +13,8 @@ import { StreamerbotAction } from "@streamerbot/client";
 import { cookies } from "next/headers";
 import { getCookie, getCookies } from "cookies-next";
 import { Profile } from "@prisma/client";
+import { createServerSupabaseClient } from "./serverHooks";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 const blackList = ["Utils", "Replay"];
 
@@ -97,11 +99,9 @@ export const useFetchActions = () => {
   });
 };
 
-export const useFetchProfile = () => {
-  const userId = getCookie("userId");
-
+export const useFetchProfile = ({ id }: { id: string }) => {
   const fetchProfile = async (): Promise<Profile> => {
-    const response = await fetch(`/api/profile/${userId}`);
+    const response = await fetch(`/api/profile/${id}`);
     const json = await response.json();
 
     return json.profile;
@@ -154,5 +154,21 @@ export const useDeleteFavourite = ({ actionId }: { actionId: string }) => {
     onSuccess: (data) => {
       query.setQueryData(["profile"], data);
     },
+  });
+};
+
+export const useGetVideo = ({ actionId }: { actionId: string }) => {
+  const supabase = createClientComponentClient();
+  const getVideo = () => {
+    const { data } = supabase.storage
+      .from("media/videos")
+      .getPublicUrl(`${actionId}.webm`);
+
+    return data.publicUrl;
+  };
+
+  return useQuery({
+    queryFn: getVideo,
+    queryKey: ["actionVideoUrl", actionId],
   });
 };

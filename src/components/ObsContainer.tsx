@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useStreamerBotContext } from "./streamerbot-context";
 import { useFetchActions, useFetchProfile } from "../lib/hooks";
 import GiphySearch from "./GiphySearch";
@@ -17,15 +17,27 @@ import { DevTool } from "@hookform/devtools";
 import { z } from "zod";
 import { StreamerbotAction } from "@streamerbot/client";
 import { ScrollArea } from "./ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import ActionCarousel from "./ActionCarousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "./ui/carousel";
+import { Card, CardContent } from "./ui/card";
 
 const formSchema = z.object({
   groups: z.array(z.string()),
 });
 
-type Props = {};
+type Props = {
+  userId: string;
+};
 
-const ObsContainer = (props: Props) => {
-  const { data: profileData } = useFetchProfile();
+const ObsContainer = ({ userId }: Props) => {
+  const { data: profileData } = useFetchProfile({ id: userId });
 
   const [selectedActionGroups, setSelectedActionGroups] = useState<
     Partial<Record<string, StreamerbotAction[]>>
@@ -86,6 +98,14 @@ const ObsContainer = (props: Props) => {
     return () => {};
   }, [fetchActionData, groupsFromForm, profileData]);
 
+  const filteredActions = useMemo(
+    () =>
+      Object.values(selectedActionGroups).map((actions) => {
+        return actions?.filter((action) => action?.group);
+      }),
+    [selectedActionGroups]
+  );
+
   return isFetching && fetchActionData ? (
     <Loading />
   ) : (
@@ -122,20 +142,55 @@ const ObsContainer = (props: Props) => {
       )}
 
       <ActionCardsProvider>
-        <ScrollArea className="h-[500px] md:h-[600px] lg:h-[800px] w-full rounded-md border p-4">
-          <div className="grid grid-cols-2 sm md:grid-cols-3 lg:grid-cols-4 gap-5 ">
-            {fetchActionData &&
-              Object.values(selectedActionGroups).map((actions) => {
-                return actions?.map((action) => (
-                  <ActionCard
-                    isFavourited={profileData?.favourites.includes(action.id)}
-                    action={action}
-                    key={action.id}
-                  />
-                ));
-              })}
-          </div>
-        </ScrollArea>
+        <Tabs defaultValue="carousel">
+          <TabsList>
+            <TabsTrigger value="tiles">Tiles</TabsTrigger>
+            <TabsTrigger value="carousel">Carousel</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tiles">
+            <ScrollArea className="h-[500px] md:h-[600px] lg:h-[800px] w-full rounded-md border p-4">
+              <div className="grid grid-cols-2 sm md:grid-cols-3 lg:grid-cols-4 gap-5 ">
+                {fetchActionData &&
+                  filteredActions.map((actions) => {
+                    return actions?.map((action) => (
+                      <ActionCard
+                        isFavourited={profileData?.favourites.includes(
+                          action.id
+                        )}
+                        action={action}
+                        key={action.id}
+                      />
+                    ));
+                  })}
+              </div>
+            </ScrollArea>
+          </TabsContent>
+          <TabsContent value="carousel">
+            <Carousel className="w-full">
+              <CarouselContent>
+                {fetchActionData &&
+                  filteredActions.map((actions) => {
+                    return actions?.map((action) => (
+                      <CarouselItem
+                        key={action.id}
+                        className="basis-1/1 md:basis-1/2 lg:basis-1/3"
+                      >
+                        <ActionCard
+                          isFavourited={profileData?.favourites.includes(
+                            action.id
+                          )}
+                          action={action}
+                          key={action.id}
+                        />
+                      </CarouselItem>
+                    ));
+                  })}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
+          </TabsContent>
+        </Tabs>
       </ActionCardsProvider>
     </div>
   );
