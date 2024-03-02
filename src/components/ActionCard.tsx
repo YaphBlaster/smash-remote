@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -38,7 +38,7 @@ const ActionCard = ({ action, isFavourited }: Props) => {
   const [thumbnailData, setThumbnailData] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const { data: url, isFetching } = useGetVideo({ actionId: action.id });
+  const { data: url } = useGetVideo({ actionId: action.id });
 
   const { mutate: addFav, isPending: addFavPending } = useAddFavourite({
     actionId: action.id,
@@ -66,10 +66,6 @@ const ActionCard = ({ action, isFavourited }: Props) => {
   const isPending = addFavPending || deleteFavPending;
 
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  if (isFetching) {
-    return <div>Loading</div>;
-  }
 
   return (
     <Card>

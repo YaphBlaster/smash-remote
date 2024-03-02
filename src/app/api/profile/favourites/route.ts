@@ -1,13 +1,23 @@
 import type { NextRequest } from "next/server";
 import prisma from "@/db";
 import { Prisma } from "@prisma/client";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "@/lib/database.types";
+import { cookies } from "next/headers";
 
 export async function PATCH(request: NextRequest) {
-  const { profileId, actionId } = await request.json();
+  const { actionId } = await request.json();
+
+  const cookieStore = cookies();
+  const supabase = createRouteHandlerClient<Database>({
+    cookies: () => cookieStore,
+  });
+
+  const { data } = await supabase.auth.getSession();
 
   const args: Prisma.ProfileUpdateArgs = {
     where: {
-      id: profileId,
+      id: data.session?.user.id,
     },
     data: {
       favourites: {

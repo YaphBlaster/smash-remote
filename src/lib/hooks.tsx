@@ -6,7 +6,12 @@ import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CooldownBarProvider from "@/components/cooldownbar-context";
 import ActionButtonGroup from "@/components/ActionButtonGroup";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  QueryClient,
+} from "@tanstack/react-query";
 import { useStreamerBotContext } from "@/components/streamerbot-context";
 import { useEffect, useRef, useState } from "react";
 import { StreamerbotAction } from "@streamerbot/client";
@@ -158,6 +163,8 @@ export const useDeleteFavourite = ({ actionId }: { actionId: string }) => {
 };
 
 export const useGetVideo = ({ actionId }: { actionId: string }) => {
+  const queryClient = useQueryClient();
+
   const supabase = createClientComponentClient();
   const getVideo = () => {
     const { data } = supabase.storage
@@ -167,8 +174,15 @@ export const useGetVideo = ({ actionId }: { actionId: string }) => {
     return data.publicUrl;
   };
 
+  const checkVideo = async () => {
+    return await queryClient.ensureQueryData({
+      queryKey: ["actionVideoUrl", actionId],
+      queryFn: getVideo,
+    });
+  };
+
   return useQuery({
-    queryFn: getVideo,
+    queryFn: checkVideo,
     queryKey: ["actionVideoUrl", actionId],
   });
 };

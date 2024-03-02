@@ -7,7 +7,7 @@ import GiphySearch from "./GiphySearch";
 import TickerForm from "./TickerForm";
 import Loading from "./Loading";
 import { Button } from "./ui/button";
-import { TimerReset } from "lucide-react";
+import { PowerOffIcon, TimerReset } from "lucide-react";
 import ActionCard from "./ActionCard";
 import { MultiSelect, OptionType } from "./MultiSelect";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
@@ -27,6 +27,11 @@ import {
   CarouselPrevious,
 } from "./ui/carousel";
 import { Card, CardContent } from "./ui/card";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "./ui/resizable";
 
 const formSchema = z.object({
   groups: z.array(z.string()),
@@ -57,10 +62,15 @@ const ObsContainer = ({ userId }: Props) => {
 
   const groups: OptionType[] | undefined = fetchActionData && [
     { label: "All", value: "All" },
-    { label: "Favourites", value: "Favourites" },
-    ...Object.keys(fetchActionData.groupedActions).map((groupName) => {
-      return { label: groupName, value: groupName };
-    }),
+    {
+      label: `Favourites [${profileData?.favourites.length}]`,
+      value: "Favourites",
+    },
+    ...Object.entries(fetchActionData.groupedActions)
+      .filter(([groupName, actions]) => !!groupName)
+      .map(([groupName, actions]) => {
+        return { label: `${groupName} [${actions?.length}]`, value: groupName };
+      }),
   ];
 
   const replayAction = fetchActionData?.actionsRaw.find(
@@ -100,8 +110,10 @@ const ObsContainer = ({ userId }: Props) => {
 
   const filteredActions = useMemo(
     () =>
-      Object.values(selectedActionGroups).map((actions) => {
-        return actions?.filter((action) => action?.group);
+      Object.entries(selectedActionGroups).map(([groupName, actions]) => {
+        return actions?.filter((action) => {
+          return action?.group;
+        });
       }),
     [selectedActionGroups]
   );
@@ -146,6 +158,7 @@ const ObsContainer = ({ userId }: Props) => {
           <TabsList>
             <TabsTrigger value="tiles">Tiles</TabsTrigger>
             <TabsTrigger value="carousel">Carousel</TabsTrigger>
+            <TabsTrigger value="remote">Remote</TabsTrigger>
           </TabsList>
           <TabsContent value="tiles">
             <ScrollArea className="h-[500px] md:h-[600px] lg:h-[800px] w-full rounded-md border p-4">
@@ -189,6 +202,21 @@ const ObsContainer = ({ userId }: Props) => {
               <CarouselPrevious />
               <CarouselNext />
             </Carousel>
+          </TabsContent>
+
+          <TabsContent value="remote">
+            <ResizablePanelGroup direction="horizontal" className="flex-wrap">
+              {profileData?.favourites.map((actionId) => {
+                const name =
+                  fetchActionData?.groupedActionsById[actionId]![0].name;
+                return (
+                  <div key={actionId}>
+                    <ResizablePanel>{name}</ResizablePanel>
+                    <ResizableHandle withHandle />
+                  </div>
+                );
+              })}
+            </ResizablePanelGroup>
           </TabsContent>
         </Tabs>
       </ActionCardsProvider>
