@@ -32,6 +32,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "./ui/resizable";
+import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures";
 
 const formSchema = z.object({
   groups: z.array(z.string()),
@@ -179,7 +180,7 @@ const ObsContainer = ({ userId }: Props) => {
             </ScrollArea>
           </TabsContent>
           <TabsContent value="carousel">
-            <Carousel className="w-full">
+            <Carousel className="w-full" plugins={[WheelGesturesPlugin()]}>
               <CarouselContent>
                 {fetchActionData &&
                   filteredActions.map((actions) => {
