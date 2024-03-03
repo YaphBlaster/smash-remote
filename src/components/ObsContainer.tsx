@@ -180,7 +180,11 @@ const ObsContainer = ({ userId }: Props) => {
             </ScrollArea>
           </TabsContent>
           <TabsContent value="carousel">
-            <Carousel className="w-full" plugins={[WheelGesturesPlugin()]}>
+            <Carousel
+              className="w-full"
+              plugins={[WheelGesturesPlugin()]}
+              opts={{ loop: true }}
+            >
               <CarouselContent>
                 {fetchActionData &&
                   filteredActions.map((actions) => {

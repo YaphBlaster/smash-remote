@@ -269,9 +269,6 @@ const MusicPlayer = (props: Props) => {
       src={`${currentAlbum.baseURI}${currentTrack.url}`}
       preload="true"
       crossOrigin="anonymous"
-      onCanPlayThrough={() => {
-        controls.play();
-      }}
       onEnded={nextSong}
       onLoadStart={() =>
         dispatch({
